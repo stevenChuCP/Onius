@@ -1,0 +1,28 @@
+# Rust
+/target/
+Cargo.lock
+
+# Node / JS
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# WASM
+/wasm/pkg/
+.wasm-pack/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onius - Base64 Tool</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div id="app">
+        <header>
+            <h1>Onius</h1>
+            <p>High-performance Base64 encoding/decoding powered by WebAssembly</p>
+        </header>
+
+        <main>
+            <div class="card">
+                <div class="input-group">
+                    <label for="input">Input Text</label>
+                    <textarea id="input" placeholder="Type or paste something..."></textarea>
+                </div>
+
+                <div class="actions">
+                    <button id="encode-btn" class="primary">Encode</button>
+                    <button id="decode-btn" class="secondary">Decode</button>
+                    <button id="swap-btn" class="ghost">Swap</button>
+                </div>
+
+                <div class="input-group">
+                    <label for="output">Result</label>
+                    <textarea id="output" readonly placeholder="Result will appear here..."></textarea>
+                </div>
+
+                <div id="error-msg" class="error hidden"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by <a href="https://crates.io/crates/base64" target="_blank" rel="noopener noreferrer">base64</a>
+            </p>
+        </footer>
+    </div>
+    <script type="module" src="./main.js"></script>
+</body>
+
+</html>
