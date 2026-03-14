@@ -1,4 +1,4 @@
-import init, { convert } from '../wasm/pkg/b64_wasm.js';
+import init, { convert } from './pkg/b64_wasm.js';
 
 const inputEl = document.getElementById('input');
 const outputEl = document.getElementById('output');

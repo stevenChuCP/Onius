@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "core",
-    "cli",
-    "wasm",
+    "apps/cli",
+    "apps/web",
 ]
 resolver = "2"
