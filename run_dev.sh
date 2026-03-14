@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-IMAGE_NAME="rust-b64-dev"
+IMAGE_NAME="onius-dev"
 
 # Build the image targeting the development stage
 docker build --target development -t "$IMAGE_NAME" .
@@ -12,5 +12,5 @@ docker build --target development -t "$IMAGE_NAME" .
 docker run -it --rm \
     -v "$(pwd)":/app \
     -p 5173:5173 \
-    --name rust-b64-dev-container \
+    --name onius-dev-container \
     "$IMAGE_NAME"

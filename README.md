@@ -1,53 +1,66 @@
-# Base64 Tool (Rust)
+# Onius
 
-A Base64 encoding/decoding tool implemented in Rust, designed for CLI usage and development within an isolated Docker environment.
+A performance-oriented, multi-format conversion toolset implemented in Rust. Onius provides a pure logic core library, a command-line interface, and a web application utilizing WebAssembly.
 
 ## Project Structure
 
-- **`b64_core` (`core/`)**: A library crate containing the core encoding/decoding logic.
-- **`cli` (`cli/`)**: A binary crate providing the command-line interface.
-- **Docker Integration**: A `Dockerfile` and `run_dev.sh` script for a consistent development environment.
+- **`onius_core` (`core/`)**: The "Brain" of the project. A pure Rust library containing all conversion logic (Base64, Base64URL, Hex), modularized for performance and maintainability.
+- **`apps/cli`**: A command-line application for fast, terminal-based conversions.
+- **`apps/web`**: A modern web interface that runs the core logic at near-native speeds via WebAssembly.
+
+## Features
+
+- **Multi-Format Support**:
+  - Plain Text
+  - Standard Base64
+  - URL-Safe Base64 (Base64URL)
+  - Hexadecimal
+- **Live Conversion**: Real-time conversion as you type in the web interface.
 
 ## Setup & Usage
 
-To start developing or using the tool:
+### Development Environment
 
-1. **Prerequisites**: Ensure Docker is installed and running.
-2. **Start Environment**: Run the development script:
+Onius is designed to be developed inside a consistent Docker environment.
+
+1. **Start Environment**: Run the development script:
    ```bash
    ./run_dev.sh
    ```
-   This builds the Docker image and drops you into a shell inside the container.
+   This builds the `onius-dev` image, starts the container, and launches the Vite development server on `http://localhost:5173`.
 
-3. **Run Commands**: Inside the container, you can run cargo commands:
-
-   **Run Tests:**
+2. **Rebuild WASM**: If you modify the core logic, rebuild the WebAssembly package:
    ```bash
-   cargo test
+   # Inside the container (or via docker exec)
+   wasm-pack build apps/web --target web
    ```
 
-   **Encode:**
-   ```bash
-   cargo run --bin cli -- encode "hello"
-   # Output: aGVsbG8=
-   ```
+### Command Line Interface (CLI)
 
-   **Decode:**
-   ```bash
-   cargo run --bin cli -- decode "aGVsbG8="
-   # Output: hello
-   ```
+Inside the container terminal:
 
-## Development Details
+**Encode:**
+```bash
+cargo run -p onius_cli -- encode "hello"
+```
 
-### Core Logic (`core/src/lib.rs`)
-Exposes `encode` and `decode` functions using the `base64` crate.
+**Decode:**
+```bash
+cargo run -p onius_cli -- decode "aGVsbG8="
+```
 
-### CLI Interface (`cli/src/main.rs`)
-Command-line interface built with `clap`, supporting `encode` and `decode` subcommands.
+## Building for Production
+
+Onius uses a multi-stage Dockerfile to produce a slim, Nginx-based production image for the web application:
+
+```bash
+docker build -t onius-web .
+docker run -p 8080:80 onius-web
+```
 
 ## TODO
 
 - [ ] License
 - [ ] SEO
 - [ ] Ads
+- [ ] PWA

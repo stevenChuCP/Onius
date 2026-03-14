@@ -8,9 +8,9 @@ pub fn convert(input: &str, from_fmt: &str, to_fmt: &str) -> Result<String, Stri
 
     let bytes = match from_fmt {
         "plain" => input.as_bytes().to_vec(),
-        "base64" => b64_core::decode_to_bytes(input)?,
-        "base64url" => b64_core::url_safe_decode_to_bytes(input)?,
-        "hex" => b64_core::hex_decode_to_bytes(input)?,
+        "base64" => onius_core::decode(input)?,
+        "base64url" => onius_core::url_safe_decode(input)?,
+        "hex" => onius_core::hex_decode(input)?,
         _ => return Err(format!("Unsupported input format: {}", from_fmt)),
     };
 
@@ -18,9 +18,9 @@ pub fn convert(input: &str, from_fmt: &str, to_fmt: &str) -> Result<String, Stri
         "plain" => {
             String::from_utf8(bytes).map_err(|e| format!("Invalid UTF-8 in output: {}", e))?
         }
-        "base64" => b64_core::encode_bytes(&bytes),
-        "base64url" => b64_core::url_safe_encode_bytes(&bytes),
-        "hex" => b64_core::hex_encode_bytes(&bytes),
+        "base64" => onius_core::encode(&bytes),
+        "base64url" => onius_core::url_safe_encode(&bytes),
+        "hex" => onius_core::hex_encode(&bytes),
         _ => return Err(format!("Unsupported output format: {}", to_fmt)),
     };
 
