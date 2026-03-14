@@ -1,14 +1,13 @@
-import init, { encode, decode } from '../wasm/pkg/b64_wasm.js';
+import init, { convert } from '../wasm/pkg/b64_wasm.js';
 
 const inputEl = document.getElementById('input');
 const outputEl = document.getElementById('output');
-const encodeBtn = document.getElementById('encode-btn');
-const decodeBtn = document.getElementById('decode-btn');
+const fromFmtEl = document.getElementById('from-fmt');
+const toFmtEl = document.getElementById('to-fmt');
 const swapBtn = document.getElementById('swap-btn');
 const errorMsg = document.getElementById('error-msg');
 
 async function run() {
-    // Initialize WASM
     await init();
 
     const showError = (msg) => {
@@ -20,35 +19,45 @@ async function run() {
         errorMsg.classList.add('hidden');
     };
 
-    encodeBtn.addEventListener('click', () => {
+    const performConversion = () => {
         hideError();
         const input = inputEl.value;
-        try {
-            outputEl.value = encode(input);
-        } catch (e) {
-            showError(e);
-        }
-    });
+        const fromFmt = fromFmtEl.value;
+        const toFmt = toFmtEl.value;
 
-    decodeBtn.addEventListener('click', () => {
-        hideError();
-        const input = inputEl.value;
+        if (!input) {
+            outputEl.value = '';
+            return;
+        }
+
         try {
-            const result = decode(input);
+            const result = convert(input, fromFmt, toFmt);
             outputEl.value = result;
         } catch (e) {
-            showError(`Decoding failed: ${e}`);
+            showError(e);
+            outputEl.value = '';
         }
-    });
+    };
+
+    inputEl.addEventListener('input', performConversion);
+    fromFmtEl.addEventListener('change', performConversion);
+    toFmtEl.addEventListener('change', performConversion);
 
     swapBtn.addEventListener('click', () => {
-        const temp = inputEl.value;
+        const tempVal = inputEl.value;
+        const tempFmt = fromFmtEl.value;
+
         inputEl.value = outputEl.value;
-        outputEl.value = temp;
-        hideError();
+        fromFmtEl.value = toFmtEl.value;
+
+        outputEl.value = tempVal;
+        toFmtEl.value = tempFmt;
+
+        performConversion();
     });
 
-    // Proactive encoding as you type? Maybe later.
+    // Initial conversion in case there's default text
+    performConversion();
 }
 
 run();

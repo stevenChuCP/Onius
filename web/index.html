@@ -20,21 +20,35 @@
         </header>
 
         <main>
-            <div class="card">
-                <div class="input-group">
-                    <label for="input">Input Text</label>
-                    <textarea id="input" placeholder="Type or paste something..."></textarea>
-                </div>
+            <div class="card wide">
+                <div class="converter-grid">
+                    <div class="column">
+                        <div class="field-header">
+                            <label for="from-fmt">From</label>
+                            <select id="from-fmt">
+                                <option value="plain" selected>Text</option>
+                                <option value="base64">Base64</option>
+                                <option value="hex">Hex</option>
+                            </select>
+                        </div>
+                        <textarea id="input" placeholder="Enter input here..."></textarea>
+                    </div>
 
-                <div class="actions">
-                    <button id="encode-btn" class="primary">Encode</button>
-                    <button id="decode-btn" class="secondary">Decode</button>
-                    <button id="swap-btn" class="ghost">Swap</button>
-                </div>
+                    <div class="controls">
+                        <button id="swap-btn" class="ghost" title="Swap input/output">⇄</button>
+                    </div>
 
-                <div class="input-group">
-                    <label for="output">Result</label>
-                    <textarea id="output" readonly placeholder="Result will appear here..."></textarea>
+                    <div class="column">
+                        <div class="field-header">
+                            <label for="to-fmt">To</label>
+                            <select id="to-fmt">
+                                <option value="plain">Text</option>
+                                <option value="base64" selected>Base64</option>
+                                <option value="hex">Hex</option>
+                            </select>
+                        </div>
+                        <textarea id="output" readonly placeholder="Result will appear here..."></textarea>
+                    </div>
                 </div>
 
                 <div id="error-msg" class="error hidden"></div>

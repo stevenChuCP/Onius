@@ -11,6 +11,33 @@ pub fn decode(input: &str) -> Result<String, String> {
     String::from_utf8(bytes).map_err(|e| e.to_string())
 }
 
+pub fn hex_encode(input: &str) -> String {
+    hex::encode(input)
+}
+
+pub fn hex_decode(input: &str) -> Result<String, String> {
+    let bytes = hex::decode(input).map_err(|e| e.to_string())?;
+    String::from_utf8(bytes).map_err(|e| e.to_string())
+}
+
+pub fn encode_bytes(bytes: &[u8]) -> String {
+    general_purpose::STANDARD.encode(bytes)
+}
+
+pub fn decode_to_bytes(input: &str) -> Result<Vec<u8>, String> {
+    general_purpose::STANDARD
+        .decode(input)
+        .map_err(|e| e.to_string())
+}
+
+pub fn hex_encode_bytes(bytes: &[u8]) -> String {
+    hex::encode(bytes)
+}
+
+pub fn hex_decode_to_bytes(input: &str) -> Result<Vec<u8>, String> {
+    hex::decode(input).map_err(|e| e.to_string())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
