@@ -1,16 +1,6 @@
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-pub fn encode(input: &str) -> String {
-    b64_core::encode(input)
-}
-
-#[wasm_bindgen]
-pub fn decode(input: &str) -> Result<String, String> {
-    b64_core::decode(input)
-}
-
-#[wasm_bindgen]
 pub fn convert(input: &str, from_fmt: &str, to_fmt: &str) -> Result<String, String> {
     if input.is_empty() {
         return Ok(String::new());

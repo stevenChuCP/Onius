@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-use b64_core::{encode, decode};
+use b64_core::{encode_bytes, decode_to_bytes};
 use anyhow::{Context, Result};
 
 #[derive(Parser)]
@@ -29,11 +29,15 @@ fn main() -> Result<()> {
 
     match &cli.command {
         Commands::Encode { input } => {
-            let encoded = encode(&input);
+            let encoded = encode_bytes(input.as_bytes());
             println!("{}", encoded);
         }
         Commands::Decode { input } => {
-            let decoded = decode(&input).map_err(|e| anyhow::anyhow!(e)).context("Failed to decode input")?;
+            let decoded_bytes = decode_to_bytes(&input)
+                .map_err(|e| anyhow::anyhow!(e))
+                .context("Failed to decode input")?;
+            let decoded = String::from_utf8(decoded_bytes)
+                .context("Decoded bytes are not valid UTF-8")?;
             println!("{}", decoded);
         }
     }
