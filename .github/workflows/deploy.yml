@@ -51,4 +51,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./apps/web/dist
+          cname: www.onius.app
           # folder: apps/web/dist # alternative if using different action
