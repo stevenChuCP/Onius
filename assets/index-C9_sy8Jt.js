@@ -16,26 +16,26 @@
     fetch(n.href, i);
   }
 })();
-function B(e, t, s) {
+function R(e, t, s) {
   let r, n;
   try {
-    const a = v(e, c.__wbindgen_malloc, c.__wbindgen_realloc), u = m, L = v(t, c.__wbindgen_malloc, c.__wbindgen_realloc), O = m, x = v(s, c.__wbindgen_malloc, c.__wbindgen_realloc), I = m, g = c.convert(a, u, L, O, x, I);
+    const a = v(e, c.__wbindgen_malloc, c.__wbindgen_realloc), u = m, A = v(t, c.__wbindgen_malloc, c.__wbindgen_realloc), O = m, x = v(s, c.__wbindgen_malloc, c.__wbindgen_realloc), I = m, g = c.convert(a, u, A, O, x, I);
     var i = g[0], o = g[1];
     if (g[3]) throw i = 0, o = 0, T(g[2]);
-    return r = i, n = o, A(i, o);
+    return r = i, n = o, L(i, o);
   } finally {
     c.__wbindgen_free(r, n, 1);
   }
 }
-function R() {
+function B() {
   return { __proto__: null, "./onius_wasm_bg.js": { __proto__: null, __wbindgen_cast_0000000000000001: function(t, s) {
-    return A(t, s);
+    return L(t, s);
   }, __wbindgen_init_externref_table: function() {
     const t = c.__wbindgen_externrefs, s = t.grow(4);
     t.set(0, void 0), t.set(s + 0, void 0), t.set(s + 1, null), t.set(s + 2, true), t.set(s + 3, false);
   } } };
 }
-function A(e, t) {
+function L(e, t) {
   return e = e >>> 0, M(e, t);
 }
 let l = null;
@@ -69,9 +69,9 @@ function T(e) {
 let p = new TextDecoder("utf-8", { ignoreBOM: true, fatal: true });
 p.decode();
 const F = 2146435072;
-let E = 0;
+let h = 0;
 function M(e, t) {
-  return E += t, E >= F && (p = new TextDecoder("utf-8", { ignoreBOM: true, fatal: true }), p.decode(), E = t), p.decode(w().subarray(e, e + t));
+  return h += t, h >= F && (p = new TextDecoder("utf-8", { ignoreBOM: true, fatal: true }), p.decode(), h = t), p.decode(w().subarray(e, e + t));
 }
 const d = new TextEncoder();
 "encodeInto" in d || (d.encodeInto = function(e, t) {
@@ -106,21 +106,21 @@ async function S(e, t) {
     return false;
   }
 }
-async function C(e) {
+async function U(e) {
   if (c !== void 0) return c;
-  e !== void 0 && (Object.getPrototypeOf(e) === Object.prototype ? { module_or_path: e } = e : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), e === void 0 && (e = new URL("/Onius/assets/onius_wasm_bg-c-MIHSOV.wasm", import.meta.url));
-  const t = R();
+  e !== void 0 && (Object.getPrototypeOf(e) === Object.prototype ? { module_or_path: e } = e : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), e === void 0 && (e = new URL("" + new URL("onius_wasm_bg-c-MIHSOV.wasm", import.meta.url).href, import.meta.url));
+  const t = B();
   (typeof e == "string" || typeof Request == "function" && e instanceof Request || typeof URL == "function" && e instanceof URL) && (e = fetch(e));
   const { instance: s, module: r } = await S(await e, t);
   return W(s);
 }
-const b = document.getElementById("input"), f = document.getElementById("output"), y = document.getElementById("from-fmt"), _ = document.getElementById("to-fmt"), D = document.getElementById("swap-btn"), h = document.getElementById("error-msg");
-async function U() {
-  await C();
+const b = document.getElementById("input"), f = document.getElementById("output"), y = document.getElementById("from-fmt"), _ = document.getElementById("to-fmt"), C = document.getElementById("swap-btn"), E = document.getElementById("error-msg");
+async function D() {
+  await U();
   const e = (r) => {
-    h.textContent = r, h.classList.remove("hidden");
+    E.textContent = r, E.classList.remove("hidden");
   }, t = () => {
-    h.classList.add("hidden");
+    E.classList.add("hidden");
   }, s = () => {
     t();
     const r = b.value, n = y.value, i = _.value;
@@ -129,15 +129,15 @@ async function U() {
       return;
     }
     try {
-      const o = B(r, n, i);
+      const o = R(r, n, i);
       f.value = o;
     } catch (o) {
       e(o), f.value = "";
     }
   };
-  b.addEventListener("input", s), y.addEventListener("change", s), _.addEventListener("change", s), D.addEventListener("click", () => {
+  b.addEventListener("input", s), y.addEventListener("change", s), _.addEventListener("change", s), C.addEventListener("click", () => {
     const r = b.value, n = y.value;
     b.value = f.value, y.value = _.value, f.value = r, _.value = n, s();
   }), s();
 }
-U();
+D();
