@@ -63,4 +63,3 @@ docker run -p 8080:80 onius-web
 - [ ] License
 - [ ] SEO
 - [ ] Ads
-- [ ] PWA

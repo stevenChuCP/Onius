@@ -43,6 +43,73 @@ async function run() {
     fromFmtEl.addEventListener('change', performConversion);
     toFmtEl.addEventListener('change', performConversion);
 
+    // Drag and Drop Handling
+    inputEl.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        inputEl.classList.add('drag-over');
+    });
+
+    ['dragleave', 'dragend'].forEach(type => {
+        inputEl.addEventListener(type, () => {
+            inputEl.classList.remove('drag-over');
+        });
+    });
+
+    inputEl.addEventListener('drop', (e) => {
+        e.preventDefault();
+        inputEl.classList.remove('drag-over');
+
+        const file = e.dataTransfer.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        const fromFmt = fromFmtEl.value;
+
+        reader.onload = (event) => {
+            let content = '';
+            if (fromFmt === 'hex') {
+                // For hex, we might want the hex representation of the bytes
+                const bytes = new Uint8Array(event.target.result);
+                content = Array.from(bytes)
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
+            } else if (fromFmt === 'base64' || fromFmt === 'base64url') {
+                // For base64, we read as text unless it's a binary file we want to encode
+                // But usually if format is base64, user expects to paste base64 text.
+                // If they drop a binary file, they probably want to ENCODE it, so they should 
+                // have "From: Text" (or we should auto-switch).
+                // For now, let's treat it as text if it looks like text, or base64 if it's already base64.
+                // Actually, the most intuitive is: if they drop a file, read it and put it in input.
+                // If From is Text, read as Text. If From is something else, read as Text (assume file contains that format).
+                const textReader = new FileReader();
+                textReader.onload = (txtEvent) => {
+                    inputEl.value = txtEvent.target.result;
+                    performConversion();
+                };
+                textReader.readAsText(file);
+                return;
+            } else {
+                // Default: read as text for "plain"
+                const textReader = new FileReader();
+                textReader.onload = (txtEvent) => {
+                    inputEl.value = txtEvent.target.result;
+                    performConversion();
+                };
+                textReader.readAsText(file);
+                return;
+            }
+
+            inputEl.value = content;
+            performConversion();
+        };
+
+        if (fromFmt === 'hex') {
+            reader.readAsArrayBuffer(file);
+        } else {
+            reader.readAsText(file);
+        }
+    });
+
     swapBtn.addEventListener('click', () => {
         const tempVal = inputEl.value;
         const tempFmt = fromFmtEl.value;
@@ -58,6 +125,15 @@ async function run() {
 
     // Initial conversion in case there's default text
     performConversion();
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('SW registered'))
+                .catch(err => console.error('SW registration failed', err));
+        });
+    }
 }
 
 run();
