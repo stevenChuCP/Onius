@@ -32,9 +32,18 @@
                                 <option value="base64">Base64</option>
                                 <option value="base64url">Base64URL</option>
                                 <option value="hex">Hex</option>
+                                <option value="image">Image</option>
                             </select>
                         </div>
                         <textarea id="input" placeholder="Enter input or drop a file here..."></textarea>
+                        <div id="file-drop-zone" class="hidden">
+                            <div class="drop-zone-content">
+                                <span id="drop-icon" class="drop-icon">+</span>
+                                <img id="image-preview" alt="Image preview" class="hidden">
+                                <p id="drop-zone-text">Drag & drop an image or click to choose</p>
+                                <input type="file" id="file-input" accept="image/*" class="hidden-input">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="controls">
