@@ -11,8 +11,8 @@
     <link rel="shortcut icon" href="./favicon.ico">
     <link rel="manifest" href="./manifest.webmanifest">
     <meta name="theme-color" content="#6366f1">
-  <script type="module" crossorigin src="./assets/index-Ck4IMq80.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DnI4kHvI.css">
+  <script type="module" crossorigin src="./assets/index-lOzWp3sm.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DM3xgNkl.css">
 </head>
 
 <body>
@@ -33,9 +33,18 @@
                                 <option value="base64">Base64</option>
                                 <option value="base64url">Base64URL</option>
                                 <option value="hex">Hex</option>
+                                <option value="image">Image</option>
                             </select>
                         </div>
                         <textarea id="input" placeholder="Enter input or drop a file here..."></textarea>
+                        <div id="file-drop-zone" class="hidden">
+                            <div class="drop-zone-content">
+                                <span id="drop-icon" class="drop-icon">+</span>
+                                <img id="image-preview" alt="Image preview" class="hidden">
+                                <p id="drop-zone-text">Drag & drop an image or click to choose</p>
+                                <input type="file" id="file-input" accept="image/*" class="hidden-input">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="controls">
