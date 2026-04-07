@@ -8,6 +8,9 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "7z-wasm": "git+https://github.com/use-strict/7z-wasm.git"
+  },
   "devDependencies": {
     "vite": "^5.0.0",
     "vite-plugin-wasm": "^3.3.0",
