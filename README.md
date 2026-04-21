@@ -10,12 +10,18 @@ A performance-oriented, multi-format conversion toolset implemented in Rust. Oni
 
 ## Features
 
-- **Multi-Format Support**:
-  - Plain Text
-  - Standard Base64
-  - URL-Safe Base64 (Base64URL)
-  - Hexadecimal
-- **Live Conversion**: Real-time conversion as you type in the web interface.
+### 1. Base64 Converter
+High-speed conversion powered natively by Rust/WASM.
+- **Multi-Format Support**: Plain Text, Standard Base64, Base64URL, Hexadecimal.
+- **File Drops**: Converts dropped files natively into Base64 formats.
+- **Live Conversion**: Real-time logic updates instantly as you type.
+
+### 2. Archive Toolkit
+Military-grade extraction and compression performed completely client-side in your browser via `7z-wasm`.
+- **Supported Formats**: `7z`, `zip`, `rar`, `tar`, `tar.gz`.
+- **Extraction**: Instantly dump archive files into safe browser memory and download distinct files.
+- **Compression**: Bundle multiple files into highly compressed singular `7z` or `zip` archives.
+- **Symmetric Encryption**: Protect outputs utilizing 7-Zip's native AES-256 password protection protocols. No data is sent to external servers.
 
 ## Setup & Usage
 

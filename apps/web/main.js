@@ -16,6 +16,39 @@ const toOptions = Array.from(toFmtEl.options);
 async function run() {
     await init();
 
+    // Setup Sidebar Navigation
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const toolViews = document.querySelectorAll('.tool-view');
+
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Deactivate all
+            navBtns.forEach(b => b.classList.remove('active'));
+            toolViews.forEach(v => {
+                v.classList.remove('active');
+                v.classList.add('hidden');
+            });
+
+            // Activate target
+            btn.classList.add('active');
+            const targetView = document.getElementById(btn.dataset.target);
+            if (targetView) {
+                targetView.classList.remove('hidden');
+                targetView.classList.add('active');
+            }
+
+            // Sync Footer Credits
+            const allCredits = document.querySelectorAll('.tool-credit');
+            allCredits.forEach(c => c.classList.add('hidden'));
+
+            const creditId = btn.dataset.target === 'view-base64' ? 'credit-base64' : 'credit-archive';
+            const creditEl = document.getElementById(creditId);
+            if (creditEl) {
+                creditEl.classList.remove('hidden');
+            }
+        });
+    });
+
     const showError = (msg) => {
         errorMsg.textContent = msg;
         errorMsg.classList.remove('hidden');
@@ -229,6 +262,416 @@ async function run() {
                 .catch(err => console.error('SW registration failed', err));
         });
     }
+
+    // Archive UI Logic (Toggles)
+    const modeExtractBtn = document.getElementById('mode-extract');
+    const modeCompressBtn = document.getElementById('mode-compress');
+    const compressOptions = document.getElementById('compress-options');
+    const archiveActionBtn = document.getElementById('archive-action-btn');
+    const browserWarning = document.getElementById('browser-warning');
+    const archiveDropZone = document.getElementById('archive-drop-zone');
+    const supportsPicker = 'showDirectoryPicker' in window;
+
+    const archiveFileInput = document.getElementById('archive-file-input');
+    const archiveDropText = document.getElementById('archive-drop-text');
+    const archiveFormat = document.getElementById('archive-format');
+    const archiveAdvanceBtn = document.getElementById('archive-advance-btn');
+    const advancedModal = document.getElementById('advanced-modal');
+    const modalClose = document.getElementById('modal-close');
+    const modalSave = document.getElementById('modal-save');
+    const archivePassword = document.getElementById('archive-password');
+    
+    // Status Monitor Elements
+    const statusIcon = document.getElementById('status-icon');
+    const statusText = document.getElementById('status-text');
+    const statusSubtext = document.getElementById('status-subtext');
+    const statusHistory = document.getElementById('status-history');
+    let loadedArchiveFiles = [];
+
+    const dropZoneControls = document.querySelector('.drop-zone-controls');
+
+    const updateBrowserWarning = () => {
+        const isExtract = modeExtractBtn.classList.contains('active');
+        if (isExtract && !supportsPicker) {
+            browserWarning.classList.remove('hidden');
+        } else {
+            browserWarning.classList.add('hidden');
+        }
+        archiveDropZone.classList.remove('hidden');
+
+        if (isExtract) {
+            archiveAdvanceBtn.classList.add('hidden');
+            archiveFileInput.multiple = false;
+        } else {
+            archiveAdvanceBtn.classList.remove('hidden');
+            archiveFileInput.multiple = true;
+        }
+    };
+
+    modeExtractBtn.addEventListener('click', () => {
+        modeExtractBtn.classList.add('active');
+        modeCompressBtn.classList.remove('active');
+        compressOptions.classList.add('hidden');
+        archiveActionBtn.textContent = 'Start Extraction';
+        loadedArchiveFiles = [];
+        updateArchiveDropUI();
+        updateBrowserWarning();
+    });
+
+    modeCompressBtn.addEventListener('click', () => {
+        modeCompressBtn.classList.add('active');
+        modeExtractBtn.classList.remove('active');
+        compressOptions.classList.remove('hidden');
+        archiveActionBtn.textContent = 'Start Compression';
+        loadedArchiveFiles = [];
+        updateArchiveDropUI();
+        updateBrowserWarning();
+    });
+
+    updateBrowserWarning();
+
+    const openModal = () => {
+        advancedModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeModal = () => {
+        advancedModal.classList.add('hidden');
+        document.body.style.overflow = '';
+        if (archivePassword.value.trim()) archiveAdvanceBtn.classList.add('active');
+        else archiveAdvanceBtn.classList.remove('active');
+    };
+
+    archiveAdvanceBtn.addEventListener('click', openModal);
+    modalClose.addEventListener('click', closeModal);
+    modalSave.addEventListener('click', closeModal);
+    advancedModal.addEventListener('click', (e) => { if (e.target === advancedModal) closeModal(); });
+
+    const passwordModal = document.getElementById('password-modal');
+    const passwordModalClose = document.getElementById('password-modal-close');
+    const passwordSubmitBtn = document.getElementById('password-submit-btn');
+    const modalPasswordInput = document.getElementById('modal-password-input');
+
+    const askForPassword = () => {
+        return new Promise((resolve) => {
+            passwordModal.classList.remove('hidden');
+            modalPasswordInput.value = '';
+            modalPasswordInput.focus();
+            const handleClose = () => { passwordModal.classList.add('hidden'); cleanup(); resolve(null); };
+            const handleSubmit = () => { const val = modalPasswordInput.value; passwordModal.classList.add('hidden'); cleanup(); resolve(val); };
+            const handleKey = (e) => { if (e.key === 'Enter') handleSubmit(); if (e.key === 'Escape') handleClose(); };
+            const cleanup = () => {
+                passwordSubmitBtn.removeEventListener('click', handleSubmit);
+                passwordModalClose.removeEventListener('click', handleClose);
+                modalPasswordInput.removeEventListener('keydown', handleKey);
+            };
+            passwordSubmitBtn.addEventListener('click', handleSubmit);
+            passwordModalClose.addEventListener('click', handleClose);
+            modalPasswordInput.addEventListener('keydown', handleKey);
+        });
+    };
+
+    const archiveClearBtn = document.getElementById('archive-clear-btn');
+    const archiveFolderBtn = document.getElementById('archive-folder-btn');
+    const archiveFolderInput = document.getElementById('archive-folder-input');
+
+    const updateStatusUI = (text, subtext = '', icon = '📦', isActive = false) => {
+        statusText.textContent = text;
+        statusSubtext.textContent = subtext;
+        statusIcon.textContent = icon;
+        if (isActive) statusIcon.classList.add('active');
+        else statusIcon.classList.remove('active');
+    };
+
+    const addHistoryItem = (msg, type = 'info') => {
+        const item = document.createElement('div');
+        item.className = `history-item ${type}`;
+        item.innerHTML = `<span class="history-dot"></span><span>${msg}</span>`;
+        statusHistory.prepend(item);
+        if (statusHistory.children.length > 5) statusHistory.lastElementChild.remove();
+    };
+
+    const updateArchiveDropUI = () => {
+        const isExtract = modeExtractBtn.classList.contains('active');
+        
+        if (loadedArchiveFiles.length === 0) {
+            if (isExtract) {
+                archiveDropText.innerHTML = '<span class="main-text">Drag & drop an archive</span><span class="sub-text">or click to browse</span>';
+            } else {
+                archiveDropText.innerHTML = '<span class="main-text">Drag & drop files or a folder here</span><span class="sub-text">or click to browse</span>';
+            }
+            updateStatusUI('Ready to process', 'No files selected');
+        } else if (loadedArchiveFiles.length === 1) {
+            const name = loadedArchiveFiles[0].name;
+            archiveDropText.innerHTML = `Ready: <strong>${name}</strong>`;
+            updateStatusUI('Item Ready', name, '📄');
+        } else {
+            archiveDropText.innerHTML = `Ready: <strong>${loadedArchiveFiles.length} files selected</strong>`;
+            updateStatusUI('Multiple Items Ready', `${loadedArchiveFiles.length} files staged`, '📁');
+        }
+    };
+
+    archiveClearBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Avoid triggering file picker
+        loadedArchiveFiles = [];
+        updateArchiveDropUI();
+        statusHistory.innerHTML = '';
+    });
+
+    archiveFolderBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if ('showDirectoryPicker' in window) {
+            try {
+                const handle = await window.showDirectoryPicker();
+                const files = await scanDirectoryHandle(handle);
+                loadedArchiveFiles = [...loadedArchiveFiles, ...files];
+                updateArchiveDropUI();
+            } catch (err) { console.log('Selection cancelled', err); }
+        } else {
+            archiveFolderInput.click();
+        }
+    });
+
+    const addFilesToList = (files) => {
+        const isExtract = modeExtractBtn.classList.contains('active');
+        const fileArray = Array.from(files);
+        
+        const newFiles = fileArray.map(f => ({
+            name: f.webkitRelativePath || f.name,
+            file: f
+        }));
+
+        if (isExtract) {
+            // Enforce single file for extraction
+            loadedArchiveFiles = newFiles.length > 0 ? [newFiles[0]] : [];
+        } else {
+            loadedArchiveFiles = [...loadedArchiveFiles, ...newFiles];
+        }
+        updateArchiveDropUI();
+    };
+
+    const scanEntry = async (entry, path = '') => {
+        if (entry.isFile) {
+            return new Promise((resolve) => {
+                entry.file((file) => {
+                    resolve([{ name: path + file.name, file }]);
+                });
+            });
+        } else if (entry.isDirectory) {
+            const reader = entry.createReader();
+            const entries = await new Promise((resolve) => reader.readEntries(resolve));
+            const subResults = await Promise.all(entries.map(e => scanEntry(e, path + entry.name + '/')));
+            return subResults.flat();
+        }
+        return [];
+    };
+
+    archiveDropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        archiveDropZone.classList.add('drag-over');
+    });
+
+    archiveDropZone.addEventListener('dragleave', () => {
+        archiveDropZone.classList.remove('drag-over');
+    });
+
+    archiveDropZone.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        archiveDropZone.classList.remove('drag-over');
+        
+        const isExtract = modeExtractBtn.classList.contains('active');
+        const items = e.dataTransfer.items;
+        
+        if (items) {
+            let entries = Array.from(items).map(item => item.webkitGetAsEntry()).filter(Boolean);
+            
+            if (isExtract) {
+                // Only take the first entry and ensure it is a file
+                const fileEntries = entries.filter(e => e.isFile);
+                if (fileEntries.length > 0) {
+                    const files = await scanEntry(fileEntries[0]);
+                    loadedArchiveFiles = files;
+                }
+            } else {
+                const allFiles = await Promise.all(entries.map(entry => scanEntry(entry)));
+                loadedArchiveFiles = [...loadedArchiveFiles, ...allFiles.flat()];
+            }
+        } else {
+            addFilesToList(e.dataTransfer.files);
+        }
+        updateArchiveDropUI();
+    });
+
+    archiveDropZone.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A' && !e.target.closest('a')) {
+            archiveFileInput.click();
+        }
+    });
+
+    archiveFileInput.addEventListener('change', (e) => {
+        addFilesToList(e.target.files);
+    });
+
+    archiveFolderInput.addEventListener('change', (e) => {
+        addFilesToList(e.target.files);
+    });
+
+    // Helper to scan a DirectoryHandle recursively
+    const scanDirectoryHandle = async (handle, path = '') => {
+        const files = [];
+        for await (const entry of handle.values()) {
+            if (entry.kind === 'file') {
+                const file = await entry.getFile();
+                files.push({ name: path + file.name, file });
+            } else if (entry.kind === 'directory') {
+                files.push(...(await scanDirectoryHandle(entry, path + entry.name + '/')));
+            }
+        }
+        return files;
+    };
+
+    // Download Helper
+    const promptDownload = (blob, filename) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
+    archiveActionBtn.addEventListener('click', async () => {
+        if (loadedArchiveFiles.length === 0) {
+            updateStatusUI('Nothing to do', 'Please select some files first', '❓');
+            return;
+        }
+
+        const isExtract = modeExtractBtn.classList.contains('active');
+        const pwd = archivePassword.value.trim();
+        const fmt = archiveFormat.value;
+
+        updateStatusUI(isExtract ? 'Extracting...' : 'Compressing...', 'Initializing WASM engine', '⚙️', true);
+        archiveActionBtn.disabled = true;
+
+        try {
+            const archiveModule = await import('./src/archive.js');
+            const onLog = (msg) => {
+                console.log(`[7z] ${msg.trim()}`);
+                const lowMsg = msg.toLowerCase();
+                if (lowMsg.includes('reading')) updateStatusUI(isExtract ? 'Reading Archive' : 'Reading Files', 'Preparing data...', '📖', true);
+                if (lowMsg.includes('success')) addHistoryItem(isExtract ? 'Extraction successful' : 'Compression successful', 'success');
+            };
+
+            if (isExtract) {
+                if (loadedArchiveFiles.length > 1) {
+                    updateStatusUI('Error', 'Single file only', '❌');
+                    archiveActionBtn.disabled = false;
+                    return;
+                }
+                const fileEntry = loadedArchiveFiles[0];
+                const file = fileEntry.file;
+
+                const buf = await file.arrayBuffer();
+                
+                const processWithAutoExtract = async (data, name, currentPwd) => {
+                    let files = await archiveModule.extractArchive(new Uint8Array(data), name, currentPwd, onLog);
+                    while (files.length === 1 && /\.(tar|tgz|tar\.gz|tar\.bz2|tar\.xz)$/i.test(files[0].name)) {
+                        files = await archiveModule.extractArchive(files[0].data, files[0].name, currentPwd, onLog);
+                    }
+                    return files;
+                };
+
+                let dirHandle = null;
+                const supportsPicker = 'showDirectoryPicker' in window;
+
+                if (supportsPicker) {
+                    try {
+                        updateStatusUI('Pending Action', 'Choose destination folder', '📂', true);
+                        dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+                    } catch (e) {
+                        updateStatusUI('Action Cancelled', 'Folder not selected', '📦');
+                        archiveActionBtn.disabled = false;
+                        return;
+                    }
+                }
+
+                let extractedFiles;
+                try {
+                    updateStatusUI('Processing...', 'Running extraction engine', '⚙️', true);
+                    extractedFiles = await processWithAutoExtract(buf, file.name, pwd);
+                } catch (err) {
+                    if (err.name === 'PasswordRequiredError') {
+                        updateStatusUI('Locked Archive', 'Enter password to continue', '🔑');
+                        const newPwd = await askForPassword();
+                        if (newPwd !== null) {
+                            archivePassword.value = newPwd;
+                            updateStatusUI('Processing...', 'Running extraction engine', '⚙️', true);
+                            extractedFiles = await processWithAutoExtract(buf, file.name, newPwd);
+                        } else {
+                            throw new Error("Cancelled: Password required.");
+                        }
+                    } else {
+                        throw err;
+                    }
+                }
+
+                if (dirHandle) {
+                    updateStatusUI('Saving...', `Writing ${extractedFiles.length} files to disk`, '💾', true);
+                    let written = 0;
+                    for (const ef of extractedFiles) {
+                        try {
+                            const paths = ef.name.split('/');
+                            const filename = paths.pop();
+                            let currentDir = dirHandle;
+                            for (const p of paths) {
+                                if (p.trim() === '') continue;
+                                currentDir = await currentDir.getDirectoryHandle(p, { create: true });
+                            }
+                            const fileHandle = await currentDir.getFileHandle(filename, { create: true });
+                            const writable = await fileHandle.createWritable();
+                            await writable.write(ef.data);
+                            await writable.close();
+                            written++;
+                        } catch (writeErr) { 
+                            console.error(`Save error: ${ef.name}`, writeErr);
+                        }
+                    }
+                    updateStatusUI('Complete!', `Saved ${written} files successfully`, '✅');
+                } else {
+                    updateStatusUI('Finalizing...', 'Preparing downloads', '📦', true);
+                    if (extractedFiles.length > 1) {
+                        const filesMap = {};
+                        extractedFiles.forEach(f => filesMap[f.name] = f.data);
+                        const bundledZip = await archiveModule.compressFiles(filesMap, 'zip', null, () => {});
+                        promptDownload(new Blob([bundledZip]), `extracted_${file.name.split('.')[0]}.zip`);
+                    } else if (extractedFiles.length === 1) {
+                        promptDownload(new Blob([extractedFiles[0].data]), extractedFiles[0].name);
+                    }
+                    updateStatusUI('Success!', 'Download started', '✅');
+                }
+            } else {
+                // Compression
+                updateStatusUI('Compressing...', `Packing ${loadedArchiveFiles.length} items`, '⚙️', true);
+                const filesMap = {};
+                for (const entry of loadedArchiveFiles) {
+                    const buf = await entry.file.arrayBuffer();
+                    filesMap[entry.name] = new Uint8Array(buf);
+                }
+
+                const compressedData = await archiveModule.compressFiles(filesMap, fmt, pwd, onLog);
+                promptDownload(new Blob([compressedData]), `archive.${fmt}`);
+                updateStatusUI('Success!', `Created ${fmt.toUpperCase()} archive`, '✅');
+            }
+        } catch (err) {
+            updateStatusUI('Process Failed', err.message || 'Check console', '❌');
+            addHistoryItem(err.message, 'error');
+            console.error(err);
+        } finally {
+            archiveActionBtn.disabled = false;
+        }
+    });
 }
 
-run();
+run().catch(console.error);

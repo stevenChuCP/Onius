@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Onius - Base64 Tool</title>
+    <title>Onius - Developer Tools</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -18,60 +18,190 @@
     <div id="app">
         <header>
             <h1>Onius</h1>
-            <p>High-performance Base64 encoding/decoding powered by WebAssembly</p>
+            <p>High-performance toolkit powered by WebAssembly</p>
+            <p>Data submitted to this site is only processed in your browser. We keep your data safe.</p>
         </header>
 
-        <main>
-            <div class="card wide">
-                <div class="converter-grid">
-                    <div class="column">
+        <main class="app-layout">
+            <aside class="sidebar">
+                <nav class="tool-nav">
+                    <button class="nav-btn active" data-target="view-base64">
+                        <span class="icon">𝙱𝟼𝟺</span>
+                        Base64
+                    </button>
+                    <button class="nav-btn" data-target="view-archive">
+                        <span class="icon">📦</span>
+                        Archive Toolkit (7z/zip)
+                    </button>
+                </nav>
+            </aside>
+
+            <div class="content-area">
+                <div id="view-archive" class="card wide tool-view hidden">
+                    <div class="archive-header-grid">
                         <div class="field-header">
-                            <label for="from-fmt">From</label>
-                            <select id="from-fmt">
-                                <option value="plain" selected>Text</option>
-                                <option value="base64">Base64</option>
-                                <option value="base64url">Base64URL</option>
-                                <option value="hex">Hex</option>
-                                <option value="image">Image</option>
-                            </select>
-                        </div>
-                        <textarea id="input" placeholder="Enter input or drop a file here..."></textarea>
-                        <div id="file-drop-zone" class="hidden">
-                            <div class="drop-zone-content">
-                                <span id="drop-icon" class="drop-icon">+</span>
-                                <img id="image-preview" alt="Image preview" class="hidden">
-                                <p id="drop-zone-text">Drag & drop an image or click to choose</p>
-                                <input type="file" id="file-input" accept="image/*" class="hidden-input">
+                            <label>Action</label>
+                            <div class="mode-toggle">
+                                <button id="mode-extract" class="toggle-btn active">Extract</button>
+                                <button id="mode-compress" class="toggle-btn">Compress</button>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="controls">
-                        <button id="swap-btn" class="ghost" title="Swap input/output">⇄</button>
-                    </div>
-
-                    <div class="column">
-                        <div class="field-header">
-                            <label for="to-fmt">To</label>
-                            <select id="to-fmt">
-                                <option value="plain">Text</option>
-                                <option value="base64" selected>Base64</option>
-                                <option value="base64url">Base64URL</option>
-                                <option value="hex">Hex</option>
+                        <div id="compress-options" class="field-header hidden">
+                            <label>Format</label>
+                            <select id="archive-format" class="text-input">
+                                <option value="zip">ZIP</option>
+                                <option value="7z">7z</option>
+                                <option value="tar">TAR</option>
                             </select>
                         </div>
-                        <textarea id="output" readonly placeholder="Result will appear here..."></textarea>
+
+                        <button id="archive-advance-btn" class="advance-btn">
+                            <span class="icon">⚙️</span>
+                            Advance
+                        </button>
+                    </div>
+
+                    <div class="archive-grid">
+                        <div class="column">
+                            <label id="archive-input-label" class="component-label">Select Archive File</label>
+                            <div id="archive-drop-zone" class="drop-zone-styled">
+                                <div class="drop-zone-content">
+                                    <span class="drop-icon">📦</span>
+                                    <p id="archive-drop-text">Drag & drop an archive or click to choose</p>
+                                    <input type="file" id="archive-file-input" class="hidden-input" multiple>
+                                    <input type="file" id="archive-folder-input" class="hidden-input" webkitdirectory directory>
+                                </div>
+                                <div class="drop-zone-controls">
+                                    <button id="archive-clear-btn" class="secondary-btn small">Clear All</button>
+                                    <button id="archive-folder-btn" class="secondary-btn small">Add Folder</button>
+                                </div>
+                            </div>
+                            <div id="browser-warning" class="warning-text hidden">
+                                <span class="icon">⚠️</span>
+                                <p><strong>Direct folder extraction</strong> is not supported on this browser.</p>
+                                <p>Please switch to a supported browser like <strong>Google Chrome</strong> to use this
+                                    feature.</p>
+                            </div>
+                        </div>
+
+                        <div class="column">
+                            <label class="component-label">Progress & Status</label>
+                            <div id="archive-status-monitor" class="status-monitor">
+                                <div class="status-main">
+                                    <div id="status-icon" class="status-icon idle">📦</div>
+                                    <div class="status-details">
+                                        <p id="status-text" class="status-text">Ready to process</p>
+                                        <p id="status-subtext" class="status-subtext">No files selected</p>
+                                    </div>
+                                </div>
+                                <div id="status-history" class="status-history">
+                                    <!-- Dynamic history items go here -->
+                                </div>
+                            </div>
+                            <button id="archive-action-btn" class="primary-btn">Start Extraction</button>
+                        </div>
                     </div>
                 </div>
+                <div id="view-base64" class="card wide tool-view active">
+                    <div class="converter-grid">
+                        <div class="column">
+                            <div class="field-header">
+                                <label for="from-fmt">From</label>
+                                <select id="from-fmt">
+                                    <option value="plain" selected>Text</option>
+                                    <option value="base64">Base64</option>
+                                    <option value="base64url">Base64URL</option>
+                                    <option value="hex">Hex</option>
+                                    <option value="image">Image</option>
+                                </select>
+                            </div>
+                            <textarea id="input" placeholder="Enter input or drop a file here..."></textarea>
+                            <div id="file-drop-zone" class="hidden">
+                                <div class="drop-zone-content">
+                                    <span id="drop-icon" class="drop-icon">+</span>
+                                    <img id="image-preview" alt="Image preview" class="hidden">
+                                    <p id="drop-zone-text">Drag & drop an image or click to choose</p>
+                                    <input type="file" id="file-input" accept="image/*" class="hidden-input">
+                                </div>
+                            </div>
+                        </div>
 
-                <div id="error-msg" class="error hidden"></div>
-            </div>
+                        <div class="controls">
+                            <button id="swap-btn" class="ghost" title="Swap input/output">⇄</button>
+                        </div>
+
+                        <div class="column">
+                            <div class="field-header">
+                                <label for="to-fmt">To</label>
+                                <select id="to-fmt">
+                                    <option value="plain">Text</option>
+                                    <option value="base64" selected>Base64</option>
+                                    <option value="base64url">Base64URL</option>
+                                    <option value="hex">Hex</option>
+                                </select>
+                            </div>
+                            <textarea id="output" readonly placeholder="Result will appear here..."></textarea>
+                        </div>
+                    </div>
+
+                    <div id="error-msg" class="error hidden"></div>
+                </div>
         </main>
 
         <footer>
-            <p>Powered by <a href="https://crates.io/crates/base64" target="_blank" rel="noopener noreferrer">base64</a>
-            </p>
+            <div id="credit-base64" class="tool-credit">
+                Powered by <a href="https://crates.io/crates/base64" target="_blank"
+                    rel="noopener noreferrer">base64</a>
+            </div>
+            <div id="credit-archive" class="tool-credit hidden">
+                Powered by <a href="https://github.com/use-strict/7z-wasm" target="_blank"
+                    rel="noopener noreferrer">7z-wasm</a>
+            </div>
         </footer>
+    </div>
+
+    <!-- Advanced Settings Modal -->
+    <div id="advanced-modal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <div class="modal-header">
+                <h2>Advanced Settings</h2>
+                <button id="modal-close" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="field-group">
+                    <label>Encryption Password</label>
+                    <p class="field-desc">Set a password to encrypt your compressed files or to extract protected
+                        archives.</p>
+                    <input type="password" id="archive-password" class="text-input wide-input"
+                        placeholder="Enter password">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-save" class="primary-btn">Save & Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Prompt Modal -->
+    <div id="password-modal" class="modal-overlay hidden">
+        <div class="modal-content card" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Password Required</h2>
+                <button id="password-modal-close" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="field-group">
+                    <p class="field-desc">This archive is encrypted. Please enter the password to continue extraction.
+                    </p>
+                    <input type="password" id="modal-password-input" class="text-input wide-input"
+                        placeholder="Enter password">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="password-submit-btn" class="primary-btn">Unlock & Extract</button>
+            </div>
+        </div>
     </div>
     <script type="module" src="./main.js"></script>
 </body>
