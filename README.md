@@ -66,6 +66,9 @@ docker run -p 8080:80 onius-web
 
 ## TODO
 
+- Make it WASM first, remove the CLI tool
+- Find a way to test 7z functions
+- Include 7z-wasm directly to the project instead of using node_modules
 - [ ] License
 - [ ] SEO
 - [ ] Ads

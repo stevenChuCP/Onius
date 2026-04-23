@@ -64,17 +64,40 @@
 
                     <div class="archive-grid">
                         <div class="column">
-                            <label id="archive-input-label" class="component-label">Select Archive File</label>
-                            <div id="archive-drop-zone" class="drop-zone-styled">
-                                <div class="drop-zone-content">
-                                    <span class="drop-icon">📦</span>
-                                    <p id="archive-drop-text">Drag & drop an archive or click to choose</p>
-                                    <input type="file" id="archive-file-input" class="hidden-input" multiple>
-                                    <input type="file" id="archive-folder-input" class="hidden-input" webkitdirectory directory>
+                            <input type="file" id="archive-file-input" class="hidden-input" multiple>
+                            <input type="file" id="archive-folder-input" class="hidden-input" webkitdirectory directory>
+                            <!-- Mode Extract: Single dominant box -->
+                            <div id="container-extract" class="input-container">
+                                <label class="component-label">Select Archive File</label>
+                                <div id="archive-drop-zone" class="drop-zone-styled">
+                                    <div class="drop-zone-content">
+                                        <span class="drop-icon">📦</span>
+                                        <p id="archive-drop-text">Drag & drop an archive or click to browse</p>
+                                    </div>
                                 </div>
-                                <div class="drop-zone-controls">
-                                    <button id="archive-clear-btn" class="secondary-btn small">Clear All</button>
-                                    <button id="archive-folder-btn" class="secondary-btn small">Add Folder</button>
+                            </div>
+
+                            <!-- Mode Compress: Dual action boxes -->
+                            <div id="container-compress" class="input-container hidden">
+                                <div class="dual-drop-zone">
+                                    <div class="drop-box">
+                                        <label class="component-label">Files</label>
+                                        <div id="drop-zone-files" class="drop-zone-styled compact">
+                                            <div class="drop-zone-content">
+                                                <span class="drop-icon">📄</span>
+                                                <p>Drop Files</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="drop-box">
+                                        <label class="component-label">Folders</label>
+                                        <div id="drop-zone-folder" class="drop-zone-styled compact">
+                                            <div class="drop-zone-content">
+                                                <span class="drop-icon">📁</span>
+                                                <p>Drop Folder</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div id="browser-warning" class="warning-text hidden">
@@ -86,7 +109,10 @@
                         </div>
 
                         <div class="column">
-                            <label class="component-label">Progress & Status</label>
+                            <div class="section-header">
+                                <label class="component-label">Progress & Status</label>
+                                <button id="archive-clear-btn" class="text-link small">Clear All</button>
+                            </div>
                             <div id="archive-status-monitor" class="status-monitor">
                                 <div class="status-main">
                                     <div id="status-icon" class="status-icon idle">📦</div>

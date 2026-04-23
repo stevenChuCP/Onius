@@ -273,6 +273,7 @@ async function run() {
     const supportsPicker = 'showDirectoryPicker' in window;
 
     const archiveFileInput = document.getElementById('archive-file-input');
+    const archiveFolderInput = document.getElementById('archive-folder-input');
     const archiveDropText = document.getElementById('archive-drop-text');
     const archiveFormat = document.getElementById('archive-format');
     const archiveAdvanceBtn = document.getElementById('archive-advance-btn');
@@ -280,15 +281,35 @@ async function run() {
     const modalClose = document.getElementById('modal-close');
     const modalSave = document.getElementById('modal-save');
     const archivePassword = document.getElementById('archive-password');
-    
+    const archiveClearBtn = document.getElementById('archive-clear-btn');
+    const dropZoneControls = document.querySelector('.drop-zone-controls');
+
+    const updateStatusUI = (text, subtext = '', icon = '📦', isActive = false) => {
+        statusText.textContent = text;
+        statusSubtext.textContent = subtext;
+        statusIcon.textContent = icon;
+        if (isActive) statusIcon.classList.add('active');
+        else statusIcon.classList.remove('active');
+    };
+
+    const addHistoryItem = (msg, type = 'info') => {
+        const item = document.createElement('div');
+        item.className = `history-item ${type}`;
+        item.innerHTML = `<span class="history-dot"></span><span>${msg}</span>`;
+        statusHistory.prepend(item);
+        if (statusHistory.children.length > 5) statusHistory.lastElementChild.remove();
+    };
+
     // Status Monitor Elements
     const statusIcon = document.getElementById('status-icon');
     const statusText = document.getElementById('status-text');
     const statusSubtext = document.getElementById('status-subtext');
     const statusHistory = document.getElementById('status-history');
+    const statusMonitor = document.getElementById('archive-status-monitor');
+    const archiveGrid = document.querySelector('.archive-grid');
+    const containerExtract = document.getElementById('container-extract');
+    const containerCompress = document.getElementById('container-compress');
     let loadedArchiveFiles = [];
-
-    const dropZoneControls = document.querySelector('.drop-zone-controls');
 
     const updateBrowserWarning = () => {
         const isExtract = modeExtractBtn.classList.contains('active');
@@ -302,9 +323,31 @@ async function run() {
         if (isExtract) {
             archiveAdvanceBtn.classList.add('hidden');
             archiveFileInput.multiple = false;
+            
+            containerCompress.classList.add('hidden');
+            
+            if (!supportsPicker) {
+                containerExtract.classList.add('hidden');
+                browserWarning.classList.remove('hidden');
+            } else {
+                containerExtract.classList.remove('hidden');
+                browserWarning.classList.add('hidden');
+            }
+            
+            // Apply one-column minimalist layout for Extract
+            if (archiveGrid) archiveGrid.classList.add('extract-mode');
+            if (statusMonitor) statusMonitor.classList.add('compact');
         } else {
             archiveAdvanceBtn.classList.remove('hidden');
             archiveFileInput.multiple = true;
+            browserWarning.classList.add('hidden');
+
+            containerExtract.classList.add('hidden');
+            containerCompress.classList.remove('hidden');
+
+            // Restore two-column dashboard layout for Compress
+            if (archiveGrid) archiveGrid.classList.remove('extract-mode');
+            if (statusMonitor) statusMonitor.classList.remove('compact');
         }
     };
 
@@ -328,67 +371,61 @@ async function run() {
         updateBrowserWarning();
     });
 
-    updateBrowserWarning();
+    // Modal Handlers
+    const openModal = (m) => m.classList.remove('hidden');
+    const closeModal = (m) => m.classList.add('hidden');
 
-    const openModal = () => {
-        advancedModal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    };
+    archiveAdvanceBtn.addEventListener('click', () => openModal(advancedModal));
+    modalClose.addEventListener('click', () => closeModal(advancedModal));
+    modalSave.addEventListener('click', () => closeModal(advancedModal));
 
-    const closeModal = () => {
-        advancedModal.classList.add('hidden');
-        document.body.style.overflow = '';
-        if (archivePassword.value.trim()) archiveAdvanceBtn.classList.add('active');
-        else archiveAdvanceBtn.classList.remove('active');
-    };
-
-    archiveAdvanceBtn.addEventListener('click', openModal);
-    modalClose.addEventListener('click', closeModal);
-    modalSave.addEventListener('click', closeModal);
-    advancedModal.addEventListener('click', (e) => { if (e.target === advancedModal) closeModal(); });
-
-    const passwordModal = document.getElementById('password-modal');
-    const passwordModalClose = document.getElementById('password-modal-close');
-    const passwordSubmitBtn = document.getElementById('password-submit-btn');
-    const modalPasswordInput = document.getElementById('modal-password-input');
+    // Handle clicking outside modal to close
+    window.addEventListener('click', (e) => {
+        if (e.target === advancedModal) closeModal(advancedModal);
+        if (e.target === document.getElementById('password-modal')) {
+            const pModal = document.getElementById('password-modal');
+            pModal.classList.add('hidden');
+        }
+    });
 
     const askForPassword = () => {
         return new Promise((resolve) => {
-            passwordModal.classList.remove('hidden');
-            modalPasswordInput.value = '';
-            modalPasswordInput.focus();
-            const handleClose = () => { passwordModal.classList.add('hidden'); cleanup(); resolve(null); };
-            const handleSubmit = () => { const val = modalPasswordInput.value; passwordModal.classList.add('hidden'); cleanup(); resolve(val); };
-            const handleKey = (e) => { if (e.key === 'Enter') handleSubmit(); if (e.key === 'Escape') handleClose(); };
-            const cleanup = () => {
-                passwordSubmitBtn.removeEventListener('click', handleSubmit);
-                passwordModalClose.removeEventListener('click', handleClose);
-                modalPasswordInput.removeEventListener('keydown', handleKey);
+            const pModal = document.getElementById('password-modal');
+            const submitBtn = document.getElementById('password-submit-btn');
+            const cancelBtn = document.getElementById('password-modal-close');
+            const input = document.getElementById('modal-password-input');
+
+            input.value = '';
+            openModal(pModal);
+            input.focus();
+
+            const handleSubmit = () => {
+                const val = input.value.trim();
+                if (val) {
+                    cleanup();
+                    resolve(val);
+                }
             };
-            passwordSubmitBtn.addEventListener('click', handleSubmit);
-            passwordModalClose.addEventListener('click', handleClose);
-            modalPasswordInput.addEventListener('keydown', handleKey);
+
+            const handleCancel = () => {
+                cleanup();
+                resolve(null);
+            };
+
+            const cleanup = () => {
+                submitBtn.removeEventListener('click', handleSubmit);
+                cancelBtn.removeEventListener('click', handleCancel);
+                closeModal(pModal);
+            };
+
+            submitBtn.addEventListener('click', handleSubmit);
+            cancelBtn.addEventListener('click', handleCancel);
+            
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') handleSubmit();
+                if (e.key === 'Escape') handleCancel();
+            };
         });
-    };
-
-    const archiveClearBtn = document.getElementById('archive-clear-btn');
-    const archiveFolderBtn = document.getElementById('archive-folder-btn');
-    const archiveFolderInput = document.getElementById('archive-folder-input');
-
-    const updateStatusUI = (text, subtext = '', icon = '📦', isActive = false) => {
-        statusText.textContent = text;
-        statusSubtext.textContent = subtext;
-        statusIcon.textContent = icon;
-        if (isActive) statusIcon.classList.add('active');
-        else statusIcon.classList.remove('active');
-    };
-
-    const addHistoryItem = (msg, type = 'info') => {
-        const item = document.createElement('div');
-        item.className = `history-item ${type}`;
-        item.innerHTML = `<span class="history-dot"></span><span>${msg}</span>`;
-        statusHistory.prepend(item);
-        if (statusHistory.children.length > 5) statusHistory.lastElementChild.remove();
     };
 
     const updateArchiveDropUI = () => {
@@ -396,46 +433,56 @@ async function run() {
         
         if (loadedArchiveFiles.length === 0) {
             if (isExtract) {
-                archiveDropText.innerHTML = '<span class="main-text">Drag & drop an archive</span><span class="sub-text">or click to browse</span>';
+                archiveDropText.innerHTML = '<span class="main-text">Drag & drop an archive or click to browse</span>';
             } else {
-                archiveDropText.innerHTML = '<span class="main-text">Drag & drop files or a folder here</span><span class="sub-text">or click to browse</span>';
+                archiveDropText.innerHTML = '<span class="main-text">Drag & drop files or a folder here or click to browse</span>';
             }
             updateStatusUI('Ready to process', 'No files selected');
+            statusHistory.innerHTML = '<div class="history-item info"><span class="history-dot"></span><span>Waiting for manifest...</span></div>';
         } else if (loadedArchiveFiles.length === 1) {
             const name = loadedArchiveFiles[0].name;
             archiveDropText.innerHTML = `Ready: <strong>${name}</strong>`;
             updateStatusUI('Item Ready', name, '📄');
+            
+            if (!isExtract) {
+                statusHistory.innerHTML = '';
+                const item = document.createElement('div');
+                item.className = 'history-item info';
+                item.innerHTML = `<span>📄 ${name}</span>`;
+                statusHistory.appendChild(item);
+            }
         } else {
             archiveDropText.innerHTML = `Ready: <strong>${loadedArchiveFiles.length} files selected</strong>`;
             updateStatusUI('Multiple Items Ready', `${loadedArchiveFiles.length} files staged`, '📁');
+            
+            // Show File List in History
+            statusHistory.innerHTML = '';
+            loadedArchiveFiles.forEach(entry => {
+                const item = document.createElement('div');
+                item.className = 'history-item info';
+                const isDir = entry.name.includes('/');
+                item.innerHTML = `<span>${isDir ? '📁' : '📄'} ${entry.name}</span>`;
+                statusHistory.appendChild(item);
+            });
         }
     };
 
-    archiveClearBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Avoid triggering file picker
-        loadedArchiveFiles = [];
-        updateArchiveDropUI();
-        statusHistory.innerHTML = '';
-    });
-
-    archiveFolderBtn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        if ('showDirectoryPicker' in window) {
-            try {
-                const handle = await window.showDirectoryPicker();
-                const files = await scanDirectoryHandle(handle);
-                loadedArchiveFiles = [...loadedArchiveFiles, ...files];
+    const setupClearListener = () => {
+        if (archiveClearBtn) {
+            archiveClearBtn.onclick = (e) => {
+                e.stopPropagation();
+                loadedArchiveFiles = [];
                 updateArchiveDropUI();
-            } catch (err) { console.log('Selection cancelled', err); }
-        } else {
-            archiveFolderInput.click();
+                statusHistory.innerHTML = '';
+            };
         }
-    });
+    };
+    setupClearListener();
 
     const addFilesToList = (files) => {
         const isExtract = modeExtractBtn.classList.contains('active');
         const fileArray = Array.from(files);
-        
+
         const newFiles = fileArray.map(f => ({
             name: f.webkitRelativePath || f.name,
             file: f
@@ -466,47 +513,51 @@ async function run() {
         return [];
     };
 
-    archiveDropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        archiveDropZone.classList.add('drag-over');
-    });
-
-    archiveDropZone.addEventListener('dragleave', () => {
-        archiveDropZone.classList.remove('drag-over');
-    });
-
-    archiveDropZone.addEventListener('drop', async (e) => {
-        e.preventDefault();
-        archiveDropZone.classList.remove('drag-over');
-        
-        const isExtract = modeExtractBtn.classList.contains('active');
-        const items = e.dataTransfer.items;
-        
-        if (items) {
-            let entries = Array.from(items).map(item => item.webkitGetAsEntry()).filter(Boolean);
+    const setupDropZone = (zone, input, folderOnly = false) => {
+        zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+        zone.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
             
-            if (isExtract) {
-                // Only take the first entry and ensure it is a file
-                const fileEntries = entries.filter(e => e.isFile);
-                if (fileEntries.length > 0) {
-                    const files = await scanEntry(fileEntries[0]);
-                    loadedArchiveFiles = files;
+            const isExtract = modeExtractBtn.classList.contains('active');
+            const items = e.dataTransfer.items;
+            
+            if (items) {
+                let entries = Array.from(items).map(item => item.webkitGetAsEntry()).filter(Boolean);
+                
+                if (isExtract) {
+                    const fileEntries = entries.filter(e => e.isFile);
+                    if (fileEntries.length > 0) {
+                        const files = await scanEntry(fileEntries[0]);
+                        loadedArchiveFiles = files;
+                    }
+                } else {
+                    const filtered = folderOnly ? entries.filter(e => e.isDirectory) : entries;
+                    const allFiles = await Promise.all(filtered.map(entry => scanEntry(entry)));
+                    loadedArchiveFiles = [...loadedArchiveFiles, ...allFiles.flat()];
                 }
             } else {
-                const allFiles = await Promise.all(entries.map(entry => scanEntry(entry)));
-                loadedArchiveFiles = [...loadedArchiveFiles, ...allFiles.flat()];
+                if (isExtract) {
+                    const files = Array.from(e.dataTransfer.files);
+                    loadedArchiveFiles = files.length > 0 ? [{ name: files[0].name, file: files[0] }] : [];
+                } else {
+                    addFilesToList(e.dataTransfer.files);
+                }
             }
-        } else {
-            addFilesToList(e.dataTransfer.files);
-        }
-        updateArchiveDropUI();
-    });
+            updateArchiveDropUI();
+        });
+        zone.addEventListener('click', () => input.click());
+    };
 
-    archiveDropZone.addEventListener('click', (e) => {
-        if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A' && !e.target.closest('a')) {
-            archiveFileInput.click();
-        }
-    });
+    // Setup main extraction zone
+    setupDropZone(archiveDropZone, archiveFileInput);
+
+    // Setup compression split zones
+    const dropZoneFiles = document.getElementById('drop-zone-files');
+    const dropZoneFolder = document.getElementById('drop-zone-folder');
+    if (dropZoneFiles) setupDropZone(dropZoneFiles, archiveFileInput);
+    if (dropZoneFolder) setupDropZone(dropZoneFolder, archiveFolderInput);
 
     archiveFileInput.addEventListener('change', (e) => {
         addFilesToList(e.target.files);
@@ -542,6 +593,11 @@ async function run() {
         URL.revokeObjectURL(url);
     };
 
+    // Initialize UI state
+    updateBrowserWarning();
+    updateArchiveDropUI();
+
+
     archiveActionBtn.addEventListener('click', async () => {
         if (loadedArchiveFiles.length === 0) {
             updateStatusUI('Nothing to do', 'Please select some files first', '❓');
@@ -574,7 +630,7 @@ async function run() {
                 const file = fileEntry.file;
 
                 const buf = await file.arrayBuffer();
-                
+
                 const processWithAutoExtract = async (data, name, currentPwd) => {
                     let files = await archiveModule.extractArchive(new Uint8Array(data), name, currentPwd, onLog);
                     while (files.length === 1 && /\.(tar|tgz|tar\.gz|tar\.bz2|tar\.xz)$/i.test(files[0].name)) {
@@ -618,10 +674,10 @@ async function run() {
                 }
 
                 if (dirHandle) {
-                    updateStatusUI('Saving...', `Writing ${extractedFiles.length} files to disk`, '💾', true);
                     let written = 0;
                     for (const ef of extractedFiles) {
                         try {
+                            updateStatusUI('Saving...', `Writing file ${written + 1} of ${extractedFiles.length}`, '💾', true);
                             const paths = ef.name.split('/');
                             const filename = paths.pop();
                             let currentDir = dirHandle;
@@ -634,17 +690,18 @@ async function run() {
                             await writable.write(ef.data);
                             await writable.close();
                             written++;
-                        } catch (writeErr) { 
+                        } catch (writeErr) {
                             console.error(`Save error: ${ef.name}`, writeErr);
+                            addHistoryItem(`Failed to save ${ef.name}: ${writeErr.name}`, 'error');
                         }
                     }
-                    updateStatusUI('Complete!', `Saved ${written} files successfully`, '✅');
+                    updateStatusUI('✅ Complete!', `Saved ${written} files successfully`, '✅');
                 } else {
                     updateStatusUI('Finalizing...', 'Preparing downloads', '📦', true);
                     if (extractedFiles.length > 1) {
                         const filesMap = {};
                         extractedFiles.forEach(f => filesMap[f.name] = f.data);
-                        const bundledZip = await archiveModule.compressFiles(filesMap, 'zip', null, () => {});
+                        const bundledZip = await archiveModule.compressFiles(filesMap, 'zip', null, () => { });
                         promptDownload(new Blob([bundledZip]), `extracted_${file.name.split('.')[0]}.zip`);
                     } else if (extractedFiles.length === 1) {
                         promptDownload(new Blob([extractedFiles[0].data]), extractedFiles[0].name);
