@@ -1,25 +1,17 @@
-const CACHE_NAME = 'onius-v1';
-const ASSETS = [
+const CACHE_NAME = 'onius-v0.2';
+const STATIC_ASSETS = [
     './',
     './index.html',
     './style.css',
     './main.js',
-    './pkg/onius_wasm.js',
-    './pkg/onius_wasm_bg.wasm',
     './manifest.webmanifest',
     './favicon.ico',
-    './favicon-16x16.png',
-    './favicon-32x32.png',
-    './apple-touch-icon.png',
-    './android-chrome-192x192.png',
-    './android-chrome-512x512.png'
+    './android-chrome-192x192.png'
 ];
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(ASSETS);
-        })
+        caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
     );
 });
 
@@ -33,10 +25,25 @@ self.addEventListener('activate', (event) => {
     );
 });
 
+// Advanced fetch handler for WASM and dynamic assets
 self.addEventListener('fetch', (event) => {
     event.respondWith(
-        caches.match(event.request).then((response) => {
-            return response || fetch(event.request);
+        caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) return cachedResponse;
+
+            return fetch(event.request).then((networkResponse) => {
+                // Cache valid responses for offline use (especially WASM)
+                if (networkResponse && networkResponse.status === 200) {
+                    const cacheCopy = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, cacheCopy);
+                    });
+                }
+                return networkResponse;
+            });
+        }).catch(() => {
+            // Offline fallback
+            return caches.match('./index.html');
         })
     );
 });

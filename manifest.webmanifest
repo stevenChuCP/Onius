@@ -1,8 +1,8 @@
 {
-    "name": "Onius - Base64 Tool",
+    "name": "Onius",
     "short_name": "Onius",
-    "description": "High-performance Base64 encoding/decoding powered by WebAssembly",
-    "start_url": ".",
+    "description": "High-performance WebAssembly tools",
+    "start_url": "./",
     "display": "standalone",
     "background_color": "#0f172a",
     "theme_color": "#6366f1",
