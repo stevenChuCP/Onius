@@ -1,0 +1,75 @@
+<div class="max-w-max-width mx-auto px-lg py-xl">
+  <div class="mb-xl">
+    <h1 class="text-display-lg-mobile md:text-display-lg font-bold text-on-surface mb-sm" data-tool="base64">Base64 Converter</h1>
+    <p class="text-body-lg text-on-surface-variant" data-i18n="base64.subtitle">Convert between Text, Base64, Base64URL, Hex, and Image formats — all locally in your browser.</p>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-lg">
+    <div class="flex flex-col gap-md">
+      <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col flex-1 min-h-[450px]">
+        <div class="flex items-center gap-1 mb-md overflow-x-auto">
+          <span class="text-label-sm text-on-surface-variant/50 mr-1.5" data-i18n="base64.from">From</span>
+          <button class="format-pill px-3 py-1.5 rounded-lg text-label-sm font-medium border transition-all cursor-pointer active" data-group="from" data-format="text" data-i18n="base64.format.text">Text</button>
+          <button class="format-pill px-3 py-1.5 rounded-lg text-label-sm font-medium border transition-all cursor-pointer" data-group="from" data-format="base64" data-i18n="base64.format.base64">Base64</button>
+          <button class="format-pill px-3 py-1.5 rounded-lg text-label-sm font-medium border transition-all cursor-pointer" data-group="from" data-format="base64url" data-i18n="base64.format.base64url">Base64URL</button>
+          <button class="format-pill px-3 py-1.5 rounded-lg text-label-sm font-medium border transition-all cursor-pointer" data-group="from" data-format="hex" data-i18n="base64.format.hex">Hex</button>
+          <button class="format-pill px-3 py-1.5 rounded-lg text-label-sm font-medium border transition-all cursor-pointer" data-group="from" data-format="image" data-i18n="base64.format.image">Image</button>
+          <div class="flex-1"></div>
+        </div>
+        <textarea class="flex-1 w-full p-md bg-surface-container border border-outline-variant rounded-xl mono-input text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none custom-scrollbar placeholder-on-surface-variant/40" id="input-text" placeholder="Paste text, Base64, or hex here..." data-i18n-placeholder="base64.input.placeholder"></textarea>
+        <div id="image-upload-area" class="hidden flex-1 w-full flex flex-col">
+          <div class="file-drop-zone group cursor-pointer border-2 border-dashed border-outline-variant/40 rounded-xl flex-1 min-h-[200px] flex flex-col items-center justify-center transition-all hover:border-primary bg-surface-container-low/30" id="image-drop-zone">
+            <div class="text-center flex flex-col items-center p-md">
+              <div class="w-14 h-14 rounded-full bg-primary-container/20 flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-primary text-3xl">image</span>
+              </div>
+              <h4 class="text-body-md font-bold text-on-surface" data-i18n="base64.dropImage.title">Drop an image here</h4>
+              <p class="font-label-sm text-label-sm text-on-surface-variant mt-xs" data-i18n="base64.dropImage.formats">PNG, JPG, WebP, SVG, GIF</p>
+              <span id="file-name" class="font-label-sm text-label-sm text-primary mt-sm"></span>
+            </div>
+          </div>
+          <input type="file" id="image-input" accept="image/*" class="hidden">
+        </div>
+        <div class="flex justify-between items-center mt-md">
+          <span class="text-label-md text-on-surface-variant" id="char-count">0 chars</span>
+          <button class="flex items-center gap-xs px-md py-2 bg-surface-container-high hover:bg-surface-variant text-on-surface transition-all active:scale-[0.97] rounded-lg text-label-md font-bold border border-outline-variant" id="clear-btn">
+            <span class="material-symbols-outlined text-[20px]">delete</span><span data-i18n="base64.clearBtn">CLEAR</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center justify-center self-center justify-self-center py-sm lg:py-0">
+      <button id="swap-btn" class="w-10 h-10 rounded-full bg-surface-container-high hover:bg-surface-variant text-on-surface border border-outline-variant flex items-center justify-center transition-all active:scale-[0.97] shadow-sm shrink-0" title="Swap formats" data-i18n-title="base64.swapTitle">
+        <span class="material-symbols-outlined text-[20px]">swap_horiz</span>
+      </button>
+    </div>
+    <div class="flex flex-col gap-md">
+      <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col flex-1 min-h-[450px]">
+        <div class="flex items-center gap-1 mb-md overflow-x-auto">
+          <span class="text-label-sm text-on-surface-variant/50 mr-1.5" data-i18n="base64.to">To</span>
+          <button class="format-pill px-3 py-1.5 rounded-lg text-label-sm font-medium border transition-all cursor-pointer" data-group="to" data-format="text" data-i18n="base64.format.text">Text</button>
+          <button class="format-pill px-3 py-1.5 rounded-lg text-label-sm font-medium border transition-all cursor-pointer active" data-group="to" data-format="base64" data-i18n="base64.format.base64">Base64</button>
+          <button class="format-pill px-3 py-1.5 rounded-lg text-label-sm font-medium border transition-all cursor-pointer" data-group="to" data-format="base64url" data-i18n="base64.format.base64url">Base64URL</button>
+          <button class="format-pill px-3 py-1.5 rounded-lg text-label-sm font-medium border transition-all cursor-pointer" data-group="to" data-format="hex" data-i18n="base64.format.hex">Hex</button>
+          <div class="flex-1"></div>
+        </div>
+        <div class="flex-1 relative">
+          <textarea class="w-full h-full p-md bg-surface-container-low border border-outline-variant rounded-xl mono-input text-body-md text-on-surface-variant resize-none custom-scrollbar" id="output-text" placeholder="Result will appear here..." data-i18n-placeholder="base64.output.placeholder" readonly></textarea>
+          <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-300" id="empty-state">
+            <span class="material-symbols-outlined text-[56px] text-primary/20 mb-md">swap_horiz</span>
+            <p class="text-label-md text-on-surface-variant/40" data-i18n="base64.emptyState">Enter something to convert</p>
+          </div>
+        </div>
+        <div class="flex justify-between items-center mt-md">
+          <span class="text-label-md text-on-surface-variant" id="output-chars">0 chars</span>
+          <button class="flex items-center gap-xs px-md py-2 bg-primary text-on-primary hover:brightness-110 transition-all rounded-lg text-label-md font-bold active:scale-[0.97]" id="copy-btn">
+            <span class="material-symbols-outlined text-[20px]">content_copy</span><span data-i18n="base64.copyBtn">COPY</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex items-center justify-center gap-1.5 mt-xl">
+    <span class="text-label-sm text-on-surface-variant/40" data-i18n="base64.poweredBy">Powered by</span>
+    <a href="https://en.wikipedia.org/wiki/Base64" target="_blank" rel="noopener noreferrer" class="text-label-sm text-primary/60 hover:text-primary transition-colors">base64</a>
+  </div>
+</div>
