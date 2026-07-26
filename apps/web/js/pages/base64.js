@@ -213,11 +213,16 @@ function bindEvents() {
 
   swapBtn.addEventListener('click', () => {
     if (fromFormat === 'image') return;
+    // Swap direction: the previous output becomes the new input (unless it
+    // was an error message, in which case there's nothing sensible to carry
+    // over). image mode is excluded by the guard above, so there's no need
+    // to touch the image-upload UI here.
+    const newInput = output.value.startsWith('Error:') ? '' : output.value;
     swapFormats();
     setActivePill('from', fromFormat);
     setActivePill('to', toFormat);
-    toggleImageUpload(false);
     updateToOptions();
+    input.value = newInput;
     runConversion();
   });
 

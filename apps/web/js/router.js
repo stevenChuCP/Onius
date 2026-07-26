@@ -14,11 +14,11 @@ const routes = {
   '/archiver.html': archiverPage
 };
 
-function normalizePath(path) {
+export function normalizePath(path) {
   return path === '' ? '/' : path;
 }
 
-function resolveRoute(path) {
+export function resolveRoute(path) {
   return routes[normalizePath(path)] || null;
 }
 
@@ -102,7 +102,7 @@ export async function navigate(path, options) {
   }
 }
 
-function isNavigableLink(link) {
+export function isNavigableLink(link) {
   if (!link) return false;
   if (link.target && link.target !== '_self') return false;
   if (link.hasAttribute('download')) return false;

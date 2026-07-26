@@ -49,4 +49,25 @@ mod tests {
         let decoded = url_safe_decode(&encoded).unwrap();
         assert_eq!(input, String::from_utf8(decoded).unwrap());
     }
+
+    #[test]
+    fn decode_invalid_input_errors() {
+        assert!(decode("not valid base64!!!").is_err());
+    }
+
+    #[test]
+    fn decode_empty_string_succeeds() {
+        assert_eq!(decode("").unwrap(), Vec::<u8>::new());
+    }
+
+    #[test]
+    fn url_safe_decode_rejects_standard_alphabet_chars() {
+        // "+" and "/" are standard-alphabet-only; URL_SAFE_NO_PAD must reject them.
+        assert!(url_safe_decode("a+b/").is_err());
+    }
+
+    #[test]
+    fn url_safe_decode_invalid_input_errors() {
+        assert!(url_safe_decode("not valid!!!").is_err());
+    }
 }

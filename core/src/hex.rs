@@ -18,4 +18,19 @@ mod tests {
         let decoded = decode(&encoded).unwrap();
         assert_eq!(input, String::from_utf8(decoded).unwrap());
     }
+
+    #[test]
+    fn decode_odd_length_errors() {
+        assert!(decode("abc").is_err());
+    }
+
+    #[test]
+    fn decode_non_hex_chars_errors() {
+        assert!(decode("zz").is_err());
+    }
+
+    #[test]
+    fn decode_empty_string_succeeds() {
+        assert_eq!(decode("").unwrap(), Vec::<u8>::new());
+    }
 }
