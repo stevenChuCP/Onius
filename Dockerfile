@@ -31,4 +31,7 @@ RUN apt-get update && apt-get install -y git vim curl && \
 COPY . .
 WORKDIR /app/apps/web
 RUN npm install
+# Baked in at build time so test runs don't re-download the browser + its
+# system libraries (mesa/X11/NSS/etc.) on every fresh container.
+RUN npx playwright install --with-deps chromium
 CMD ["npm", "run", "dev"]
