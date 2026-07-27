@@ -2,6 +2,7 @@ import { loadComponent, loadComponents, initSidebarToggle, initSidebarSettingsPo
 import { setupThemeToggle, initTheme } from './theme.js';
 import { initMobileLayout, updateMobileNav, closeMobileOverlays } from './mobile.js';
 import { initI18n, initLangToggles } from './i18n.js';
+import { initInstallPrompt } from './pwa.js';
 
 import * as homePage from './pages/home.js';
 import * as base64Page from './pages/base64.js';
@@ -146,6 +147,7 @@ export async function startRouter() {
   initSidebarSettingsPopover();
   initLangToggles();
   initMobileLayout();
+  initInstallPrompt();
   bindLinkInterception();
 
   history.replaceState({ path: window.location.pathname }, '', window.location.pathname);
