@@ -1,17 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { __setConvertImpl } from '../../tests/mocks/onius_wasm.js';
 
-const mockWasmConvert = vi.fn();
+const mockWasmConvert = { fn: () => '', calls: [] };
 
-vi.mock('/pkg/onius_wasm.js', () => ({
-  default: () => Promise.resolve(),
-  convert: (...args) => mockWasmConvert(...args)
-}));
+__setConvertImpl((...args) => {
+  mockWasmConvert.calls.push(args);
+  return mockWasmConvert.fn(...args);
+});
 
 const base64Module = await import('./base64.js');
 const { convert, switchFormat, swapFormats } = base64Module;
 
 beforeEach(() => {
-  mockWasmConvert.mockReset();
+  mockWasmConvert.fn = () => '';
+  mockWasmConvert.calls = [];
   switchFormat('from', 'text');
   switchFormat('to', 'base64');
 });
@@ -34,34 +36,34 @@ describe('switchFormat / swapFormats', () => {
 
 describe('convert', () => {
   it('maps UI format names to the wasm-side names ("text" -> "plain")', () => {
-    mockWasmConvert.mockReturnValue('result');
+    mockWasmConvert.fn = () => 'result';
     convert('hello', 'text', 'base64');
-    expect(mockWasmConvert).toHaveBeenCalledWith('hello', 'plain', 'base64');
+    expect(mockWasmConvert.calls.at(-1)).toEqual(['hello', 'plain', 'base64']);
   });
 
   it('passes hex/base64/base64url through unchanged', () => {
-    mockWasmConvert.mockReturnValue('result');
+    mockWasmConvert.fn = () => 'result';
     convert('hello', 'hex', 'base64url');
-    expect(mockWasmConvert).toHaveBeenCalledWith('hello', 'hex', 'base64url');
+    expect(mockWasmConvert.calls.at(-1)).toEqual(['hello', 'hex', 'base64url']);
   });
 
   it('returns the wasm result on success', () => {
-    mockWasmConvert.mockReturnValue('aGVsbG8=');
+    mockWasmConvert.fn = () => 'aGVsbG8=';
     expect(convert('hello', 'text', 'base64')).toBe('aGVsbG8=');
   });
 
   it('wraps a raw string thrown by wasm into an Error with .message', () => {
-    mockWasmConvert.mockImplementation(() => { throw 'Unsupported input format: bogus'; });
+    mockWasmConvert.fn = () => { throw 'Unsupported input format: bogus'; };
     expect(() => convert('x', 'bogus', 'base64')).toThrowError('Unsupported input format: bogus');
   });
 
   it('passes through an Error-like object thrown by wasm, preserving .message', () => {
-    mockWasmConvert.mockImplementation(() => { throw new Error('boom'); });
+    mockWasmConvert.fn = () => { throw new Error('boom'); };
     expect(() => convert('x', 'text', 'base64')).toThrowError('boom');
   });
 
   it('falls back to String(e) for a thrown value with no message', () => {
-    mockWasmConvert.mockImplementation(() => { throw { weird: 'object' }; });
+    mockWasmConvert.fn = () => { throw { weird: 'object' }; };
     expect(() => convert('x', 'text', 'base64')).toThrowError('[object Object]');
   });
 });

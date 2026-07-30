@@ -1,17 +1,10 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 // router.js transitively imports js/pages/base64.js and js/pages/archiver.js,
-// both of which import the real /pkg/onius_wasm.js at module top-level (a
-// root-absolute browser path that doesn't resolve under Vitest/Node, and
-// which would otherwise try to load the real .wasm binary). Mock it before
-// router.js is imported so the whole module graph evaluates cleanly.
-vi.mock('/pkg/onius_wasm.js', () => ({
-  default: () => Promise.resolve(),
-  convert: () => '',
-  extract_archive: () => Promise.resolve([]),
-  compress_files: () => Promise.resolve(new Uint8Array())
-}));
-
+// both of which import /pkg/onius_wasm.js — a real path only produced by
+// `wasm-pack build`, not present in a fresh checkout. vitest.config.js
+// aliases it to tests/mocks/onius_wasm.js, an always-present stub, so this
+// whole module graph evaluates cleanly with no per-test mocking needed here.
 const { normalizePath, resolveRoute, isNavigableLink } = await import('./router.js');
 
 describe('normalizePath', () => {
