@@ -1,0 +1,49 @@
+<div id="settings-modal" class="fixed inset-0 z-[60] hidden md:hidden" style="animation:overlayFadeIn 0.2s ease">
+  <div id="settings-modal-backdrop" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+  <div class="absolute bottom-0 inset-x-0 bg-surface-container-lowest rounded-t-2xl p-xl max-h-[80vh] overflow-y-auto shadow-2xl" style="animation:overlaySlideUp 0.25s ease">
+    <div class="flex items-center justify-between mb-xl">
+      <h2 class="text-headline-sm font-bold text-on-surface" data-i18n="settings.title">Settings</h2>
+      <button id="settings-modal-close" class="flex items-center justify-center w-9 h-9 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+    <div class="space-y-lg">
+      <div>
+        <label class="text-label-sm text-on-surface-variant/60 uppercase tracking-widest font-bold mb-3 block" data-i18n="settings.appearance">Appearance</label>
+        <button id="settings-theme-btn" class="flex items-center justify-between w-full bg-surface-container rounded-xl px-md py-sm hover:bg-surface-container-high transition-colors">
+          <span class="flex items-center gap-md">
+            <span class="material-symbols-outlined text-[20px] text-on-surface-variant" id="settings-theme-icon">dark_mode</span>
+            <span class="text-body-md text-on-surface" data-i18n="settings.theme">Theme</span>
+          </span>
+          <span class="text-body-sm text-on-surface-variant" id="settings-theme-label">Dark</span>
+        </button>
+      </div>
+      <div>
+        <label class="text-label-sm text-on-surface-variant/60 uppercase tracking-widest font-bold mb-3 block" data-i18n="settings.language">Language</label>
+        <button id="settings-lang-btn" class="flex items-center justify-between w-full bg-surface-container rounded-xl px-md py-sm hover:bg-surface-container-high transition-colors">
+          <span class="flex items-center gap-md">
+            <span class="material-symbols-outlined text-[20px] text-on-surface-variant">language</span>
+            <span class="text-body-md text-on-surface" data-i18n="settings.language">Language</span>
+          </span>
+          <span class="text-body-sm text-on-surface-variant" id="settings-lang-label">English</span>
+        </button>
+      </div>
+      <div>
+        <label class="text-label-sm text-on-surface-variant/60 uppercase tracking-widest font-bold mb-3 block" data-i18n="settings.links">Links</label>
+        <a href="https://github.com/stevenchucp/onius" target="_blank" class="flex items-center gap-md bg-surface-container rounded-xl px-md py-sm text-on-surface hover:bg-surface-container-high transition-colors no-underline">
+          <svg class="w-[20px] h-[20px] shrink-0 text-on-surface-variant" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          <span class="text-body-md">GitHub</span>
+          <span class="ml-auto material-symbols-outlined text-[20px] text-on-surface-variant">open_in_new</span>
+        </a>
+        <a href="https://github.com/stevenchucp/onius/issues/new" target="_blank" class="flex items-center gap-md bg-surface-container rounded-xl px-md py-sm text-on-surface hover:bg-surface-container-high transition-colors no-underline">
+          <span class="material-symbols-outlined text-[20px] text-on-surface-variant">feedback</span>
+          <span class="text-body-md" data-i18n="settings.requestFeature">Request a feature</span>
+          <span class="ml-auto material-symbols-outlined text-[20px] text-on-surface-variant">open_in_new</span>
+        </a>
+      </div>
+      <div class="pt-lg border-t border-outline-variant/20 text-center">
+        <p class="text-body-sm text-on-surface-variant/40" data-i18n="settings.version">Onius v0.5.0</p>
+      </div>
+    </div>
+  </div>
+</div>

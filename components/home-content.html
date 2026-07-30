@@ -1,0 +1,106 @@
+<div class="max-w-max-width mx-auto px-lg py-xl">
+  <!-- Hero -->
+  <section class="text-center mb-xl pt-2xl md:pt-3xl">
+    <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-xl leading-tight">
+      <span data-i18n="home.hero.line1">Your data. Your machine.</span><br>
+      <span class="text-primary" data-i18n="home.hero.line2">The right tool.</span>
+    </h1>
+
+    <div class="max-w-xl mx-auto">
+      <p class="text-body-sm text-on-surface-variant" data-i18n="home.tagline">
+        Powered by WebAssembly &mdash; your data never leaves your machine.
+      </p>
+    </div>
+  </section>
+  <!-- Recently Used -->
+  <section class="mb-xl hidden" id="recent-section">
+    <div class="flex justify-between items-center mb-md">
+      <h2 class="font-headline-md text-headline-sm text-on-surface" data-i18n="home.recentlyUsed">Recently Used</h2>
+      <button class="text-primary font-label-sm tracking-widest hover:underline uppercase" id="clear-recent" data-i18n="home.clearHistory">CLEAR HISTORY</button>
+    </div>
+    <div class="overflow-x-auto pb-md custom-scrollbar">
+      <div class="flex gap-md" id="recent-list"></div>
+    </div>
+  </section>
+  <!-- Bento Grid -->
+  <div class="bento-grid mb-xl max-w-full">
+    <div class="col-span-12 md:col-span-8 max-w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-lg hover:border-primary transition-colors cursor-pointer group">
+      <div class="flex justify-between items-start mb-lg">
+        <div>
+          <span class="font-label-sm text-secondary block mb-xs uppercase tracking-widest" data-i18n="home.card.encoding.eyebrow">ENCODING &amp; DECODING</span>
+          <h3 class="font-headline-sm text-on-surface" data-i18n="home.card.encoding.title">Data Transformation</h3>
+        </div>
+        <div class="p-sm bg-primary-container/20 rounded-full text-primary group-hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined">code</span>
+        </div>
+      </div>
+      <a class="p-md bg-surface-container border border-outline-variant/30 rounded-lg flex items-center gap-sm hover:bg-surface-container-high transition-colors" href="/base64.html">
+        <span class="material-symbols-outlined text-primary" data-icon="b64-icon">terminal</span>
+        <div>
+          <p class="font-bold text-on-surface" data-tool="base64">Base64 Converter</p>
+          <p class="text-label-sm text-on-surface-variant" data-i18n="home.card.base64.desc">Encode/Decode Base64 data</p>
+        </div>
+      </a>
+    </div>
+    <a class="col-span-12 md:col-span-4 max-w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-lg hover:border-primary transition-colors cursor-pointer group" href="/archiver.html">
+      <div class="flex justify-between items-start mb-lg">
+        <div>
+          <span class="font-label-sm text-secondary block mb-xs uppercase tracking-widest" data-i18n="home.card.archiving.eyebrow">ARCHIVING</span>
+          <h3 class="font-headline-sm text-on-surface" data-tool="archiver">Compression/Extraction</h3>
+        </div>
+        <div class="p-sm rounded-full text-primary group-hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined">inventory_2</span>
+        </div>
+      </div>
+      <div class="aspect-video bg-surface-container-low border border-outline-variant border-dashed rounded-lg relative overflow-hidden flex items-center justify-center">
+        <div class="p-md text-center">
+          <p class="text-label-sm text-on-surface-variant font-label-md" data-i18n="home.card.archiving.desc">Extract .zip, .rar, .7z, .tar, or .gzip file contents.</p>
+        </div>
+      </div>
+    </a>
+    <div class="col-span-12 md:col-span-4 max-w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-lg opacity-50 cursor-default">
+      <div class="flex justify-between items-start mb-lg">
+        <div>
+          <span class="font-label-sm text-secondary block mb-xs uppercase tracking-widest" data-i18n="home.card.security.eyebrow">SECURITY</span>
+          <h3 class="font-headline-sm text-on-surface" data-i18n="home.card.security.title">Crypto Keys</h3>
+        </div>
+        <div class="p-sm bg-error-container/20 rounded-full text-error">
+          <span class="material-symbols-outlined">verified_user</span>
+        </div>
+      </div>
+      <ul class="space-y-sm">
+        <li class="flex items-center justify-between text-on-surface-variant py-xs border-b border-outline-variant/30">
+          <span class="font-label-md" data-tool="sha256">SHA-256 Generator</span>
+          <span class="text-label-xs text-primary font-bold tracking-widest" data-i18n="common.soon">SOON</span>
+        </li>
+        <li class="flex items-center justify-between text-on-surface-variant py-xs border-b border-outline-variant/30">
+          <span class="font-label-md" data-tool="rsa">RSA Generator</span>
+          <span class="text-label-xs text-primary font-bold tracking-widest" data-i18n="common.soon">SOON</span>
+        </li>
+        <li class="flex items-center justify-between text-on-surface-variant py-xs">
+          <span class="font-label-md" data-tool="pqc">PQC Algorithm</span>
+          <span class="text-label-xs text-primary font-bold tracking-widest" data-i18n="common.soon">SOON</span>
+        </li>
+      </ul>
+    </div>
+    <div class="col-span-12 md:col-span-8 max-w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-lg opacity-50 cursor-default">
+      <div class="flex justify-between items-start mb-lg">
+        <div>
+          <span class="font-label-sm text-secondary block mb-xs uppercase tracking-widest" data-i18n="home.card.files.eyebrow">FILES</span>
+          <h3 class="font-headline-sm text-on-surface inline" data-i18n="home.card.files.title">Format Converters</h3>
+          <span class="text-label-xs text-primary font-bold tracking-widest ml-2" data-i18n="common.comingSoon">COMING SOON</span>
+        </div>
+        <div class="p-sm bg-secondary-container/20 rounded-full text-secondary">
+          <span class="material-symbols-outlined">description</span>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-sm">
+        <span class="bg-surface-container px-md py-sm rounded-full text-body-sm font-bold text-on-surface border border-outline-variant/30" data-tool="svg2png">SVG &rarr; PNG</span>
+        <span class="bg-surface-container px-md py-sm rounded-full text-body-sm font-bold text-on-surface border border-outline-variant/30" data-tool="pem2cer">PEM &rarr; CER</span>
+        <span class="bg-surface-container px-md py-sm rounded-full text-body-sm font-bold text-on-surface border border-outline-variant/30" data-tool="pem2crt">PEM &rarr; CRT</span>
+        <span class="bg-surface-container px-md py-sm rounded-full text-body-sm font-bold text-on-surface border border-outline-variant/30" data-i18n="home.card.files.andMore">and More</span>
+      </div>
+    </div>
+  </div>
+
+</div>

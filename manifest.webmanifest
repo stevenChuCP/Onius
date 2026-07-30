@@ -2,10 +2,10 @@
     "name": "Onius",
     "short_name": "Onius",
     "description": "High-performance WebAssembly tools",
-    "start_url": "./",
+    "start_url": "/",
     "display": "standalone",
-    "background_color": "#0f172a",
-    "theme_color": "#6366f1",
+    "background_color": "#0b1326",
+    "theme_color": "#4f46e5",
     "icons": [
         {
             "src": "favicon-16x16.png",

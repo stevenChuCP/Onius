@@ -1,0 +1,15 @@
+<div id="tools-overlay" class="fixed inset-0 z-[60] hidden md:hidden" style="animation:overlayFadeIn 0.2s ease">
+  <div id="tools-overlay-backdrop" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+  <div class="absolute inset-x-0 top-0 bottom-0 flex flex-col bg-surface-container-lowest">
+    <div class="flex items-center justify-between px-lg py-md border-b border-outline-variant shrink-0 bg-surface-container-lowest">
+      <div>
+        <h2 class="text-headline-sm font-bold text-on-surface" data-i18n="nav.tools">Tools</h2>
+        <p class="text-on-surface-variant" id="tools-overlay-subtitle" style="font-size:12px;line-height:16px;margin-top:2px"></p>
+      </div>
+      <button id="tools-overlay-close" class="flex items-center justify-center w-9 h-9 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+    <div class="flex-1 overflow-y-auto overflow-x-hidden p-lg custom-scrollbar tools-overlay-grid" id="tools-grid"></div>
+  </div>
+</div>

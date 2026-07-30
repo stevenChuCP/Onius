@@ -1,0 +1,33 @@
+<aside id="main-sidebar" class="hidden md:flex flex-col h-full bg-surface-container-lowest border-r border-outline-variant py-lg px-md justify-between flex-shrink-0 z-40 transition-all duration-300" style="width: 280px;">
+  <div class="flex flex-col gap-xs">
+    <nav class="flex flex-col gap-xs" id="sidebar-nav">
+      <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-xl" href="/base64.html">
+        <span class="material-symbols-outlined" data-icon="b64-icon">code</span>
+        <span class="text-body-md sidebar-text" data-tool="base64">Base64 Converter</span>
+      </a>
+      <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-xl" href="/archiver.html">
+        <span class="material-symbols-outlined">inventory_2</span>
+        <span class="text-body-md sidebar-text" data-tool="archiver">Archive Manager</span>
+      </a>
+    </nav>
+  </div>
+  <div class="flex flex-col gap-xs">
+    <div class="relative">
+      <button id="sidebar-settings-trigger" type="button" class="flex items-center gap-md px-md py-sm w-full text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-xl">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="text-body-md sidebar-text" data-i18n="nav.settings">Settings</span>
+      </button>
+      <div id="sidebar-settings-popover" class="hidden absolute bottom-full left-0 mb-2 w-64 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-2xl p-sm z-50">
+        <a href="https://github.com/stevenchucp/onius/issues/new" target="_blank" class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface hover:bg-surface-container-high transition-colors no-underline">
+          <span class="material-symbols-outlined text-[20px] text-on-surface-variant">feedback</span>
+          <span class="text-body-sm" data-i18n="settings.requestFeature">Request a feature</span>
+          <span class="ml-auto material-symbols-outlined text-[18px] text-on-surface-variant">open_in_new</span>
+        </a>
+      </div>
+    </div>
+    <div class="mt-md p-md bg-surface-container rounded-xl border border-outline-variant sidebar-install-card">
+      <p class="text-label-sm text-on-surface-variant mb-xs" data-i18n="sidebar.version">Version 0.5.0</p>
+      <button class="hidden w-full bg-primary-container text-on-primary-container py-2 rounded-lg text-label-md font-bold hover:brightness-110 transition-all install-app-btn" data-i18n="sidebar.installApp">Install App</button>
+    </div>
+  </div>
+</aside>

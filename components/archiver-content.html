@@ -1,0 +1,344 @@
+<div class="max-w-max-width mx-auto px-lg py-xl">
+
+  <!-- Browser Warning -->
+  <div id="browser-warning"
+       class="hidden mb-lg flex items-start gap-md p-md rounded-xl"
+       role="alert"
+       style="background:color-mix(in srgb, var(--clr-caution) 10%, transparent);border:1px solid color-mix(in srgb, var(--clr-caution) 30%, transparent)">
+    <span class="material-symbols-outlined shrink-0 mt-0.5" style="color:var(--clr-caution)">warning</span>
+    <div>
+      <p class="text-body-sm font-bold" style="color:var(--clr-caution)" data-i18n="archiver.warning.title">Limited browser support</p>
+      <p class="text-body-sm text-on-surface-variant" data-i18n="archiver.warning.body">
+        Some features (folder selection, extraction to a specific location) require the
+        File System API, which is currently only available in
+        Chromium-based browsers (Chrome, Edge, Brave, Opera).
+        Please switch to one of these for the full experience.
+      </p>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="mb-lg">
+    <h1 class="text-display-lg-mobile md:text-display-lg font-bold text-on-surface mb-sm" data-tool="archiver">Archive Manager</h1>
+    <p class="text-body-lg text-on-surface-variant" data-i18n="archiver.subtitle">
+      Compress files to save space or extract existing archives — everything stays on your machine.
+    </p>
+  </div>
+
+  <!-- Mode Toggle -->
+  <div class="flex items-center justify-center gap-lg mb-xl">
+    <div class="flex bg-surface-container-high rounded-full p-[3px] border border-outline-variant">
+      <button id="mode-compress"
+              class="mode-btn px-xl py-[7px] rounded-full text-label-sm font-bold transition-all bg-primary text-on-primary">
+        <span class="material-symbols-outlined text-[16px] align-text-bottom mr-1">archive</span>
+        <span data-i18n="archiver.mode.compress">Compress</span>
+      </button>
+      <button id="mode-extract"
+              class="mode-btn px-xl py-[7px] rounded-full text-label-sm font-bold transition-all text-on-surface-variant hover:text-on-surface">
+        <span class="material-symbols-outlined text-[16px] align-text-bottom mr-1">unarchive</span>
+        <span data-i18n="archiver.mode.extract">Extract</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="grid grid-cols-1 xl:grid-cols-12 gap-lg">
+
+    <!-- Left Column: Drop + Controls + Status -->
+    <div class="xl:col-span-7 flex flex-col gap-lg">
+
+      <!-- Drop Zone and Controls Card -->
+      <div id="left-card" class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg xl:min-h-[500px] flex flex-col">
+
+        <!-- Drop Zone -->
+        <div id="drop-zone"
+             class="file-drop-zone group cursor-pointer border-2 border-dashed border-outline-variant/40 rounded-xl min-h-[200px] flex flex-col items-center justify-center transition-all hover:border-primary bg-surface-container-low/30">
+
+          <!-- Compress drop content -->
+          <div id="compress-drop-content" class="text-center flex flex-col items-center px-lg py-xl">
+            <div class="w-14 h-14 rounded-full bg-primary-container/20 flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-primary text-3xl">upload_file</span>
+            </div>
+            <h4 class="text-body-lg font-bold text-on-surface mb-xs" data-i18n="archiver.drop.compressTitle">Drop files or folders here</h4>
+            <p class="text-label-sm text-on-surface-variant mb-md" data-i18n="archiver.drop.compressHint">or click to browse</p>
+            <div class="flex gap-sm">
+              <button id="browse-files-btn" class="px-md py-2 bg-primary text-on-primary rounded-lg text-label-sm font-bold hover:opacity-90 transition-all">
+                <span class="material-symbols-outlined text-[16px] align-text-bottom">description</span>
+                <span data-i18n="archiver.drop.selectFiles">Select files</span>
+              </button>
+              <button id="browse-folder-btn" class="px-md py-2 bg-surface-container-high text-on-surface rounded-lg text-label-sm font-bold border border-outline-variant/30 hover:bg-surface-container-highest transition-all">
+                <span class="material-symbols-outlined text-[16px] align-text-bottom">folder</span>
+                <span data-i18n="archiver.drop.selectFolder">Select folder</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Extract drop content -->
+          <div id="extract-drop-content" class="hidden text-center flex flex-col items-center px-lg py-xl">
+            <div class="w-14 h-14 rounded-full bg-tertiary-container/20 flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-tertiary text-3xl">unarchive</span>
+            </div>
+            <h4 class="text-body-lg font-bold text-on-surface mb-xs" data-i18n="archiver.drop.extractTitle">Drop archives here</h4>
+            <p class="text-label-sm text-on-surface-variant mb-md">.zip, .7z, .rar, .tar, .tar.gz, .tar.bz, .gz, .bz</p>
+            <button id="browse-archive-btn" class="px-md py-2 bg-primary text-on-primary rounded-lg text-label-sm font-bold hover:opacity-90 transition-all">
+              <span class="material-symbols-outlined text-[16px] align-text-bottom">folder_zip</span>
+              <span data-i18n="archiver.drop.selectArchive">Select archive</span>
+            </button>
+          </div>
+
+          <!-- Hidden file inputs -->
+          <input type="file" id="file-input" multiple hidden accept="*/*">
+          <input type="file" id="folder-input" hidden webkitdirectory>
+          <input type="file" id="archive-input" multiple hidden accept="*/*">
+        </div>
+
+        <!-- Archive Inspector (extract mode: shown when archive is loaded) -->
+        <div id="archive-inspector" class="hidden mt-lg rounded-xl border border-outline-variant/30 overflow-hidden">
+          <div class="flex items-center gap-md px-md py-[14px]"
+               style="background:color-mix(in srgb, var(--clr-primary) 5%, transparent)">
+            <div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-primary text-[22px]">folder_zip</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p id="inspector-filename" class="text-body-sm font-bold text-on-surface truncate">archive.zip</p>
+              <p id="inspector-meta" class="text-label-sm text-on-surface-variant font-mono">—</p>
+            </div>
+            <button id="remove-archive-btn"
+                    class="shrink-0 p-xs rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors">
+              <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div id="controls-wrapper" class="mt-lg space-y-lg">
+
+          <!-- Compress controls -->
+          <div id="compress-controls" class="space-y-lg">
+            <!-- Format selector -->
+            <div>
+              <label class="text-label-sm text-on-surface-variant/60 uppercase tracking-widest font-bold mb-2 block" data-i18n="archiver.format.label">Format</label>
+              <select id="format-select"
+                      class="w-full sm:w-auto min-w-[200px] bg-surface-container border border-outline-variant rounded-lg px-md py-sm text-body-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent transition-all cursor-pointer">
+                <option value="zip" data-i18n="archiver.format.zip">.zip (recommended)</option>
+                <option value="7z" data-i18n="archiver.format.7z">.7z (best compression)</option>
+                <option value="tar.gz">.tar.gz</option>
+                <option value="tar.bz">.tar.bz</option>
+                <option value="tar">.tar</option>
+                <option value="gz">.gz</option>
+                <option value="bz">.bz</option>
+              </select>
+            </div>
+
+            <!-- Password (shown for zip/7z) -->
+            <div id="compress-password-section" class="hidden">
+              <div class="flex items-center gap-md mb-2">
+                <label class="text-label-sm text-on-surface-variant/60 uppercase tracking-widest font-bold" data-i18n="archiver.password.label">Password (optional)</label>
+                <label class="flex items-center gap-sm cursor-pointer select-none">
+                  <input type="checkbox" id="compress-enable-password"
+                         class="w-4 h-4 rounded bg-surface-container-low border-outline-variant text-primary focus:ring-primary focus:ring-offset-background">
+                  <span class="text-body-sm text-on-surface-variant" data-i18n="archiver.password.protect">Protect with password</span>
+                </label>
+              </div>
+              <div id="compress-password-fields" class="hidden flex flex-col sm:flex-row gap-md">
+                <input type="password" id="compress-password"
+                       class="flex-1 bg-surface-container border border-outline-variant rounded-lg px-md py-sm text-body-sm text-on-surface placeholder-on-surface-variant/40 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                       placeholder="Enter password" data-i18n-placeholder="archiver.password.enter" disabled>
+                <input type="password" id="compress-password-confirm"
+                       class="flex-1 bg-surface-container border border-outline-variant rounded-lg px-md py-sm text-body-sm text-on-surface placeholder-on-surface-variant/40 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                       placeholder="Confirm password" data-i18n-placeholder="archiver.password.confirm" disabled>
+              </div>
+            </div>
+
+            <!-- Compress button -->
+            <button id="compress-btn"
+                    class="w-full flex items-center justify-center gap-md bg-primary text-on-primary p-md rounded-xl font-bold text-body-md hover:opacity-90 transition-all active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100"
+                    disabled>
+              <span class="material-symbols-outlined">archive</span>
+              <span data-i18n="archiver.compressBtn">Compress Files</span>
+            </button>
+          </div>
+
+          <!-- Extract controls: auto-extraction handles this flow -->
+          <div id="extract-controls" class="hidden"></div>
+
+        </div>
+
+        <!-- Progress State -->
+        <div id="progress-state" class="hidden mt-lg">
+          <div class="flex items-center gap-md mb-lg">
+            <div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center shrink-0">
+              <span id="progress-icon" class="material-symbols-outlined text-primary text-[20px]">archive</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p id="progress-title" class="text-body-sm font-bold text-on-surface" data-i18n="archiver.progress.compressing">Compressing files...</p>
+              <p id="progress-subtitle" class="text-label-sm text-on-surface-variant truncate"></p>
+            </div>
+            <button id="cancel-btn" class="text-label-sm text-on-surface-variant hover:text-error transition-colors shrink-0 px-md py-xs rounded-lg hover:bg-error/10" data-i18n="archiver.progress.cancel">Cancel</button>
+          </div>
+          <div class="space-y-xs">
+            <div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden">
+              <div id="progress-fill" class="h-2 rounded-full transition-all duration-500 ease-out" style="width:0%;background:var(--clr-primary)"></div>
+            </div>
+            <div class="flex justify-between">
+              <span id="progress-status" class="text-label-sm text-on-surface-variant" data-i18n="archiver.progress.starting">Starting...</span>
+              <span id="progress-percentage" class="text-label-sm font-bold font-mono text-on-surface-variant">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Success State -->
+        <div id="success-state" class="hidden mt-lg">
+          <div class="flex flex-col items-center text-center py-md gap-lg">
+            <div class="w-16 h-16 rounded-full flex items-center justify-center" style="background:color-mix(in srgb, var(--clr-success) 12%, transparent)">
+              <span class="material-symbols-outlined text-[36px]" style="color:var(--clr-success);font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">check_circle</span>
+            </div>
+            <div>
+              <p id="success-title" class="text-body-lg font-bold text-on-surface" data-i18n="archiver.success.title">Archive created</p>
+              <p id="success-filename" class="text-label-md font-mono text-on-surface-variant mt-xs">archive.zip</p>
+            </div>
+            <div id="success-stats-row" class="flex items-center gap-xl">
+              <div class="text-center">
+                <p class="text-label-sm text-on-surface-variant mb-xs" data-i18n="archiver.success.original">Original</p>
+                <p id="success-original-size" class="text-body-sm font-bold text-on-surface">—</p>
+              </div>
+              <span class="material-symbols-outlined text-on-surface-variant/40 text-[20px]">arrow_forward</span>
+              <div class="text-center">
+                <p class="text-label-sm text-on-surface-variant mb-xs" data-i18n="archiver.success.compressed">Compressed</p>
+                <p id="success-compressed-size" class="text-body-sm font-bold" style="color:var(--clr-success)">—</p>
+              </div>
+              <div class="w-px h-8 bg-outline-variant/30 self-center"></div>
+              <div class="text-center">
+                <p class="text-label-sm text-on-surface-variant mb-xs" data-i18n="archiver.success.saved">Saved</p>
+                <p id="success-saved-pct" class="text-body-sm font-bold text-on-surface">—</p>
+              </div>
+            </div>
+            <div class="flex gap-md w-full">
+              <button id="download-btn"
+                      class="flex-1 flex items-center justify-center gap-sm bg-primary text-on-primary py-md rounded-xl text-label-sm font-bold hover:opacity-90 transition-all active:scale-[0.99]">
+                <span class="material-symbols-outlined text-[16px]">download</span>
+                <span data-i18n="archiver.success.download">Download</span>
+              </button>
+              <button id="compress-again-btn"
+                      class="flex-1 flex items-center justify-center gap-sm bg-surface-container-high text-on-surface py-md rounded-xl text-label-sm font-bold border border-outline-variant/30 hover:bg-surface-container-highest transition-all">
+                <span class="material-symbols-outlined text-[16px]">refresh</span>
+                <span data-i18n="archiver.success.compressMore">Compress more</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="hidden mt-lg">
+          <div class="flex flex-col items-center text-center py-md gap-lg">
+            <div class="w-16 h-16 rounded-full flex items-center justify-center" style="background:color-mix(in srgb, var(--clr-error) 12%, transparent)">
+              <span class="material-symbols-outlined text-[36px]" style="color:var(--clr-error);font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">error</span>
+            </div>
+            <div>
+              <p class="text-body-lg font-bold text-on-surface" data-i18n="archiver.error.title">Something went wrong</p>
+              <p id="error-detail" class="text-label-sm text-on-surface-variant mt-xs" data-i18n="archiver.error.compressionFailed">Compression failed.</p>
+            </div>
+            <button id="error-details-toggle" class="text-label-sm text-primary hover:underline transition-colors" data-i18n="archiver.error.showDetails">Show details</button>
+            <div id="error-log" class="hidden w-full rounded-xl overflow-hidden border border-outline-variant/20 text-left">
+              <div class="px-md py-sm bg-surface-container-high border-b border-outline-variant/20">
+                <span class="text-label-sm font-bold text-on-surface-variant/60 uppercase tracking-widest" data-i18n="archiver.error.log">Operation log</span>
+              </div>
+              <div id="error-log-content" class="p-md max-h-40 overflow-y-auto custom-scrollbar font-mono text-label-sm text-on-surface-variant space-y-1"></div>
+            </div>
+            <button id="try-again-btn"
+                    class="w-full flex items-center justify-center gap-sm bg-surface-container-high text-on-surface py-md rounded-xl text-label-sm font-bold border border-outline-variant/30 hover:bg-surface-container-highest transition-all"
+                    data-i18n="archiver.error.tryAgain">
+              Try again
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Right Column: Queued Files -->
+    <div class="xl:col-span-5 xl:max-h-0 xl:min-h-full xl:overflow-hidden">
+      <section class="bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col h-full overflow-hidden">
+        <div class="p-lg border-b border-outline-variant/20 flex items-center justify-between">
+          <h3 id="queue-section-title" class="text-headline-sm font-bold text-on-surface" data-i18n="archiver.queue.title">Queued Files</h3>
+          <span id="file-count-badge" class="bg-surface-container-high text-on-surface-variant font-label-sm px-md py-xs rounded-full">0 items</span>
+        </div>
+
+        <div id="file-list" class="flex-1 overflow-y-auto custom-scrollbar divide-y divide-outline-variant/10 min-h-[260px]">
+          <div id="file-list-empty" class="h-full flex flex-col items-center justify-center text-center px-lg py-xl">
+            <div class="w-14 h-14 rounded-2xl bg-surface-container-high flex items-center justify-center mb-md">
+              <span id="file-list-empty-icon" class="material-symbols-outlined text-[26px] text-on-surface-variant/30">inventory_2</span>
+            </div>
+            <p id="file-list-empty-title" class="text-body-sm font-medium text-on-surface-variant/50" data-i18n="archiver.queue.emptyTitle">No extracted files</p>
+            <p id="file-list-empty-subtitle" class="text-label-sm text-on-surface-variant/30 mt-xs" data-i18n="archiver.queue.emptySubtitle">Start by dropping archives to the left</p>
+          </div>
+          <div id="archive-analyzing" class="hidden h-full flex flex-col items-center justify-center text-center px-lg py-xl">
+            <div class="w-14 h-14 rounded-2xl bg-surface-container-high flex items-center justify-center mb-md">
+              <div class="w-6 h-6 rounded-full border-2 border-outline-variant border-t-primary animate-spin"></div>
+            </div>
+            <p class="text-body-sm font-medium text-on-surface-variant/50" data-i18n="archiver.queue.analyzing">Analyzing archive...</p>
+            <p class="text-label-sm text-on-surface-variant/30 mt-xs" data-i18n="archiver.queue.readingStructure">Reading file structure</p>
+          </div>
+        </div>
+
+        <div class="p-lg bg-surface-container-low border-t border-outline-variant/20 space-y-md">
+          <div class="flex justify-between items-center">
+            <span class="text-body-sm text-on-surface-variant" id="file-count-text">0 files</span>
+            <span class="text-label-md font-bold text-on-surface font-mono" id="total-size-text">0 B</span>
+          </div>
+          <button id="save-output-footer-btn"
+                  class="hidden w-full flex items-center justify-center gap-sm py-md bg-primary text-on-primary rounded-xl text-label-sm font-bold hover:opacity-90 transition-all active:scale-[0.99]">
+            <span class="material-symbols-outlined text-[16px]">save</span>
+            <span data-i18n="archiver.queue.saveOutput">Save output</span>
+          </button>
+          <button id="clear-all-btn"
+                  class="w-full py-md text-error hover:bg-error/10 rounded-lg text-label-sm font-bold transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  data-i18n="archiver.queue.clearAll"
+                  disabled>Clear All</button>
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+  <!-- Password Modal (extract mode: auto-shown for encrypted archives) -->
+  <div id="password-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-lg"
+       style="background:rgba(0,0,0,0.45);backdrop-filter:blur(3px)">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-xl max-w-sm w-full shadow-2xl">
+      <div class="flex items-center gap-md mb-lg">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+             style="background:color-mix(in srgb, var(--clr-caution) 12%, transparent)">
+          <span class="material-symbols-outlined" style="color:var(--clr-caution)">lock</span>
+        </div>
+        <div>
+          <p class="text-body-md font-bold text-on-surface" data-i18n="archiver.passwordModal.title">Password required</p>
+          <p class="text-label-sm text-on-surface-variant" data-i18n="archiver.passwordModal.hint">Leave blank to try without a password</p>
+        </div>
+      </div>
+      <input type="password" id="modal-password"
+             class="w-full bg-surface-container border border-outline-variant rounded-xl px-md py-sm text-body-sm text-on-surface placeholder-on-surface-variant/40 focus:ring-2 focus:ring-primary focus:border-transparent transition-all mb-sm"
+             placeholder="Enter archive password" data-i18n-placeholder="archiver.passwordModal.placeholder">
+      <p id="modal-password-error" class="hidden text-label-sm mb-md flex items-center gap-xs" style="color:var(--clr-error)">
+        <span class="material-symbols-outlined text-[14px]">error</span>
+        <span data-i18n="archiver.passwordModal.wrongPassword">Incorrect password — try again</span>
+      </p>
+      <div class="flex gap-md mt-md">
+        <button id="modal-cancel-btn"
+                class="flex-1 py-sm bg-surface-container-high text-on-surface rounded-xl text-label-sm font-bold border border-outline-variant/30 hover:bg-surface-container-highest transition-all"
+                data-i18n="archiver.passwordModal.cancel">
+          Cancel
+        </button>
+        <button id="modal-unlock-btn"
+                class="flex-1 py-sm bg-primary text-on-primary rounded-xl text-label-sm font-bold hover:opacity-90 transition-all active:scale-[0.99]"
+                data-i18n="archiver.passwordModal.unlock">
+          Unlock & Extract
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="flex items-center justify-center gap-1.5 mt-xl">
+    <span class="text-label-sm text-on-surface-variant/40" data-i18n="archiver.poweredBy">Powered by</span>
+    <a href="https://github.com/stevenChuCP/7zip-wasm" target="_blank" rel="noopener noreferrer" class="text-label-sm text-primary/60 hover:text-primary transition-colors">7zip-wasm</a>
+  </div>
+</div>

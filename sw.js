@@ -1,49 +1,18 @@
-const CACHE_NAME = 'onius-v0.2';
-const STATIC_ASSETS = [
-    './',
-    './index.html',
-    './style.css',
-    './main.js',
-    './manifest.webmanifest',
-    './favicon.ico',
-    './android-chrome-192x192.png'
-];
-
-self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
-    );
+const c = "onius-v0.5.0", h = ["/", "/index.html", "/base64.html", "/archiver.html", "/css/style.css", "/js/config.js", "/components/shell.html", "/components/sidebar.html", "/components/header.html", "/components/footer.html", "/components/bottombar.html", "/components/tools-overlay.html", "/components/settings-modal.html", "/components/home-content.html", "/components/base64-content.html", "/components/archiver-content.html", "/manifest.webmanifest", "/favicon.ico", "/android-chrome-192x192.png"];
+self.addEventListener("install", (t) => {
+  t.waitUntil(caches.open(c).then((n) => n.addAll(h)));
 });
-
-self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((keys) => {
-            return Promise.all(
-                keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-            );
-        })
-    );
+self.addEventListener("activate", (t) => {
+  t.waitUntil(caches.keys().then((n) => Promise.all(n.filter((e) => e !== c).map((e) => caches.delete(e)))));
 });
-
-// Advanced fetch handler for WASM and dynamic assets
-self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) return cachedResponse;
-
-            return fetch(event.request).then((networkResponse) => {
-                // Cache valid responses for offline use (especially WASM)
-                if (networkResponse && networkResponse.status === 200) {
-                    const cacheCopy = networkResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, cacheCopy);
-                    });
-                }
-                return networkResponse;
-            });
-        }).catch(() => {
-            // Offline fallback
-            return caches.match('./index.html');
-        })
-    );
+self.addEventListener("fetch", (t) => {
+  t.respondWith(caches.match(t.request).then((n) => n || fetch(t.request).then((e) => {
+    if (e && e.status === 200) {
+      const s = e.clone();
+      caches.open(c).then((o) => {
+        o.put(t.request, s);
+      });
+    }
+    return e;
+  })).catch(() => caches.match("/index.html")));
 });
