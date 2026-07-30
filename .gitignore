@@ -10,6 +10,7 @@ dist-ssr/
 
 # WASM
 /wasm/pkg/
+apps/web/pkg/
 .wasm-pack/
 
 # IDEs
@@ -26,3 +27,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+
+# Test artifacts
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/blob-report/
