@@ -79,6 +79,7 @@ function initArchiver() {
   initFormatSelect();
   EL.formatSelect.dispatchEvent(new Event('change'));
   initCompressPassword();
+  initPasswordReveal();
   initPasswordModal();
   initRemoveArchiveBtn();
   initSaveOutputFooterBtn();
@@ -119,9 +120,12 @@ function cacheElements() {
     compressPasswordFields: document.getElementById('compress-password-fields'),
     compressPassword: document.getElementById('compress-password'),
     compressPasswordConfirm: document.getElementById('compress-password-confirm'),
+    compressPasswordReveal: document.getElementById('compress-password-reveal'),
+    compressPasswordConfirmReveal: document.getElementById('compress-password-confirm-reveal'),
     compressBtn: document.getElementById('compress-btn'),
     passwordModal: document.getElementById('password-modal'),
     modalPassword: document.getElementById('modal-password'),
+    modalPasswordReveal: document.getElementById('modal-password-reveal'),
     modalCancelBtn: document.getElementById('modal-cancel-btn'),
     modalUnlockBtn: document.getElementById('modal-unlock-btn'),
     modalPasswordError: document.getElementById('modal-password-error'),
@@ -462,6 +466,7 @@ function removeArchive() {
 
 function showPasswordModal(isRetry) {
   EL.modalPassword.value = '';
+  setPasswordRevealed(EL.modalPassword, EL.modalPasswordReveal, false);
   EL.modalPasswordError.classList.toggle('hidden', !isRetry);
   EL.passwordModal.classList.remove('hidden');
   setTimeout(function() { EL.modalPassword.focus(); }, 50);
@@ -619,6 +624,8 @@ function initFormatSelect() {
       EL.compressPasswordFields.classList.add('hidden');
       EL.compressPassword.disabled = true;
       EL.compressPasswordConfirm.disabled = true;
+      EL.compressPasswordReveal.disabled = true;
+      EL.compressPasswordConfirmReveal.disabled = true;
     }
   });
 }
@@ -629,10 +636,33 @@ function initCompressPassword() {
     EL.compressPasswordFields.classList.toggle('hidden', !checked);
     EL.compressPassword.disabled = !checked;
     EL.compressPasswordConfirm.disabled = !checked;
+    EL.compressPasswordReveal.disabled = !checked;
+    EL.compressPasswordConfirmReveal.disabled = !checked;
     if (!checked) {
       EL.compressPassword.value = '';
       EL.compressPasswordConfirm.value = '';
+      setPasswordRevealed(EL.compressPassword, EL.compressPasswordReveal, false);
+      setPasswordRevealed(EL.compressPasswordConfirm, EL.compressPasswordConfirmReveal, false);
     }
+  });
+}
+
+function setPasswordRevealed(input, btn, revealed) {
+  input.type = revealed ? 'text' : 'password';
+  btn.querySelector('.material-symbols-outlined').textContent = revealed ? 'visibility_off' : 'visibility';
+  btn.setAttribute('aria-label', revealed ? 'Hide password' : 'Show password');
+}
+
+function initPasswordReveal() {
+  [
+    [EL.compressPassword, EL.compressPasswordReveal],
+    [EL.compressPasswordConfirm, EL.compressPasswordConfirmReveal],
+    [EL.modalPassword, EL.modalPasswordReveal]
+  ].forEach(function(pair) {
+    var input = pair[0], btn = pair[1];
+    btn.addEventListener('click', function() {
+      setPasswordRevealed(input, btn, input.type === 'password');
+    });
   });
 }
 
