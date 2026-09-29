@@ -1,0 +1,220 @@
+<div class="max-w-max-width mx-auto px-lg py-xl">
+
+  <!-- Browser Warning -->
+  <div id="ecdh-browser-warning"
+       class="hidden mb-lg flex items-start gap-md p-md rounded-xl"
+       role="alert"
+       style="background:color-mix(in srgb, var(--clr-caution) 10%, transparent);border:1px solid color-mix(in srgb, var(--clr-caution) 30%, transparent)">
+    <span class="material-symbols-outlined shrink-0 mt-0.5" style="color:var(--clr-caution)">warning</span>
+    <div>
+      <p class="text-body-sm font-bold" style="color:var(--clr-caution)" data-i18n="ecdh.warning.title">Web Crypto API unavailable</p>
+      <p class="text-body-sm text-on-surface-variant" data-i18n="ecdh.warning.body">
+        This demo needs the browser's SubtleCrypto API, which requires a secure context
+        (HTTPS or localhost) and a modern browser. Please switch browsers or load this page over HTTPS.
+      </p>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="mb-lg">
+    <h1 class="text-display-lg-mobile md:text-display-lg font-bold text-on-surface mb-sm" data-tool="ecdh">ECDH Key Exchange</h1>
+    <p class="text-body-lg text-on-surface-variant" data-i18n="ecdh.subtitle">
+      Watch two parties derive a shared secret over an insecure channel — every key stays on your machine, computed live with the Web Crypto API.
+    </p>
+  </div>
+
+  <!-- Curve Selector -->
+  <div class="flex flex-wrap items-center gap-md mb-xl">
+    <span class="text-label-sm font-bold text-on-surface-variant uppercase tracking-widest" data-i18n="ecdh.curve.label">Curve</span>
+    <div class="flex gap-sm">
+      <button type="button" class="curve-pill format-pill active px-md py-[6px] rounded-full text-label-sm font-bold border transition-all" data-curve="P-256">P-256</button>
+      <button type="button" class="curve-pill format-pill px-md py-[6px] rounded-full text-label-sm font-bold border transition-all" data-curve="P-384">P-384</button>
+      <button type="button" class="curve-pill format-pill px-md py-[6px] rounded-full text-label-sm font-bold border transition-all" data-curve="P-521">P-521</button>
+    </div>
+    <button id="ecdh-reset-btn" type="button" class="ml-auto flex items-center gap-xs px-md py-[6px] rounded-full text-label-sm font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors border border-outline-variant">
+      <span class="material-symbols-outlined text-[16px]">restart_alt</span>
+      <span data-i18n="ecdh.resetBtn">Reset</span>
+    </button>
+  </div>
+
+  <!-- Alice / Bob Grid -->
+  <div class="grid grid-cols-1 xl:grid-cols-[1fr_auto_1fr] gap-lg items-start mb-xl">
+
+    <!-- Alice Card -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-md">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-sm">
+          <div class="w-9 h-9 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-[20px]">person</span>
+          </div>
+          <h3 class="font-headline-sm text-on-surface" data-i18n="ecdh.alice.name">Alice</h3>
+        </div>
+        <button id="alice-generate-btn" type="button" class="flex items-center gap-xs px-md py-sm rounded-lg bg-primary text-on-primary text-label-sm font-bold hover:brightness-110 transition-all">
+          <span class="material-symbols-outlined text-[16px]">vpn_key</span>
+          <span data-i18n="ecdh.generateBtn">Generate Keypair</span>
+        </button>
+      </div>
+
+      <div>
+        <label class="text-label-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-xs" data-i18n="ecdh.publicKey.label">Public key (share freely)</label>
+        <div class="relative">
+          <input type="text" id="alice-public-key" readonly placeholder="—"
+                 class="w-full bg-surface-container border border-outline-variant rounded-lg pl-md pr-10 py-sm font-label-md text-label-sm text-on-surface placeholder-on-surface-variant/40 truncate">
+          <button type="button" id="alice-public-key-copy" class="absolute inset-y-0 right-0 flex items-center px-sm text-on-surface-variant/60 hover:text-on-surface-variant" aria-label="Copy public key">
+            <span class="material-symbols-outlined text-[18px]">content_copy</span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-label-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-xs" data-i18n="ecdh.privateKey.label">Private key (keep secret)</label>
+        <div class="relative">
+          <input type="password" id="alice-private-key" readonly placeholder="—"
+                 class="w-full bg-surface-container border border-outline-variant rounded-lg pl-md pr-16 py-sm font-label-md text-label-sm text-on-surface placeholder-on-surface-variant/40 truncate">
+          <div class="absolute inset-y-0 right-0 flex items-center gap-1 pr-1">
+            <button type="button" id="alice-private-key-reveal" class="flex items-center px-sm text-on-surface-variant/60 hover:text-on-surface-variant disabled:opacity-40" aria-label="Show private key">
+              <span class="material-symbols-outlined text-[18px]">visibility</span>
+            </button>
+            <button type="button" id="alice-private-key-copy" class="flex items-center px-sm text-on-surface-variant/60 hover:text-on-surface-variant" aria-label="Copy private key">
+              <span class="material-symbols-outlined text-[18px]">content_copy</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-label-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-xs" data-i18n="ecdh.peerKey.aliceLabel">Bob's public key (received)</label>
+        <input type="text" id="alice-peer-key" placeholder="Exchange keys, or paste a public key here" data-i18n-placeholder="ecdh.peerKey.placeholder"
+               class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-label-md text-label-sm text-on-surface placeholder-on-surface-variant/40 focus:ring-2 focus:ring-primary focus:border-transparent transition-all truncate">
+      </div>
+
+      <button id="alice-derive-btn" type="button" disabled
+              class="flex items-center justify-center gap-xs px-md py-sm rounded-lg border border-outline-variant text-on-surface font-bold text-label-sm hover:bg-surface-container-high disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+        <span class="material-symbols-outlined text-[16px]">key</span>
+        <span data-i18n="ecdh.deriveBtn">Derive Shared Secret</span>
+      </button>
+
+      <p id="alice-error" class="hidden text-label-sm flex items-center gap-xs" style="color:var(--clr-error)">
+        <span class="material-symbols-outlined text-[14px]">error</span>
+        <span id="alice-error-text"></span>
+      </p>
+
+      <div>
+        <label class="text-label-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-xs" data-i18n="ecdh.sharedSecret.label">Derived shared secret</label>
+        <div class="relative">
+          <input type="text" id="alice-shared-secret" readonly placeholder="—"
+                 class="w-full bg-surface-container border border-outline-variant rounded-lg pl-md pr-10 py-sm font-label-md text-label-sm text-on-surface placeholder-on-surface-variant/40 truncate">
+          <button type="button" id="alice-shared-secret-copy" class="absolute inset-y-0 right-0 flex items-center px-sm text-on-surface-variant/60 hover:text-on-surface-variant" aria-label="Copy shared secret">
+            <span class="material-symbols-outlined text-[18px]">content_copy</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exchange Column -->
+    <div class="flex xl:flex-col items-center justify-center gap-sm py-md xl:py-0 xl:h-full">
+      <button id="exchange-btn" type="button" disabled
+              class="flex flex-col items-center gap-xs p-md rounded-full bg-surface-container-high border border-outline-variant text-on-surface hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-all group"
+              aria-label="Exchange public keys">
+        <span class="material-symbols-outlined text-[28px] group-hover:text-primary transition-colors">sync_alt</span>
+      </button>
+      <span class="text-label-xs text-on-surface-variant uppercase tracking-widest text-center leading-tight">
+        <span data-i18n="ecdh.exchangeLabel.line1">Exchange</span><br>
+        <span data-i18n="ecdh.exchangeLabel.line2">Public Keys</span>
+      </span>
+    </div>
+
+    <!-- Bob Card -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-md">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-sm">
+          <div class="w-9 h-9 rounded-full bg-tertiary-container/20 flex items-center justify-center text-tertiary">
+            <span class="material-symbols-outlined text-[20px]">person</span>
+          </div>
+          <h3 class="font-headline-sm text-on-surface" data-i18n="ecdh.bob.name">Bob</h3>
+        </div>
+        <button id="bob-generate-btn" type="button" class="flex items-center gap-xs px-md py-sm rounded-lg bg-primary text-on-primary text-label-sm font-bold hover:brightness-110 transition-all">
+          <span class="material-symbols-outlined text-[16px]">vpn_key</span>
+          <span data-i18n="ecdh.generateBtn">Generate Keypair</span>
+        </button>
+      </div>
+
+      <div>
+        <label class="text-label-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-xs" data-i18n="ecdh.publicKey.label">Public key (share freely)</label>
+        <div class="relative">
+          <input type="text" id="bob-public-key" readonly placeholder="—"
+                 class="w-full bg-surface-container border border-outline-variant rounded-lg pl-md pr-10 py-sm font-label-md text-label-sm text-on-surface placeholder-on-surface-variant/40 truncate">
+          <button type="button" id="bob-public-key-copy" class="absolute inset-y-0 right-0 flex items-center px-sm text-on-surface-variant/60 hover:text-on-surface-variant" aria-label="Copy public key">
+            <span class="material-symbols-outlined text-[18px]">content_copy</span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-label-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-xs" data-i18n="ecdh.privateKey.label">Private key (keep secret)</label>
+        <div class="relative">
+          <input type="password" id="bob-private-key" readonly placeholder="—"
+                 class="w-full bg-surface-container border border-outline-variant rounded-lg pl-md pr-16 py-sm font-label-md text-label-sm text-on-surface placeholder-on-surface-variant/40 truncate">
+          <div class="absolute inset-y-0 right-0 flex items-center gap-1 pr-1">
+            <button type="button" id="bob-private-key-reveal" class="flex items-center px-sm text-on-surface-variant/60 hover:text-on-surface-variant disabled:opacity-40" aria-label="Show private key">
+              <span class="material-symbols-outlined text-[18px]">visibility</span>
+            </button>
+            <button type="button" id="bob-private-key-copy" class="flex items-center px-sm text-on-surface-variant/60 hover:text-on-surface-variant" aria-label="Copy private key">
+              <span class="material-symbols-outlined text-[18px]">content_copy</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-label-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-xs" data-i18n="ecdh.peerKey.bobLabel">Alice's public key (received)</label>
+        <input type="text" id="bob-peer-key" placeholder="Exchange keys, or paste a public key here" data-i18n-placeholder="ecdh.peerKey.placeholder"
+               class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-label-md text-label-sm text-on-surface placeholder-on-surface-variant/40 focus:ring-2 focus:ring-primary focus:border-transparent transition-all truncate">
+      </div>
+
+      <button id="bob-derive-btn" type="button" disabled
+              class="flex items-center justify-center gap-xs px-md py-sm rounded-lg border border-outline-variant text-on-surface font-bold text-label-sm hover:bg-surface-container-high disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+        <span class="material-symbols-outlined text-[16px]">key</span>
+        <span data-i18n="ecdh.deriveBtn">Derive Shared Secret</span>
+      </button>
+
+      <p id="bob-error" class="hidden text-label-sm flex items-center gap-xs" style="color:var(--clr-error)">
+        <span class="material-symbols-outlined text-[14px]">error</span>
+        <span id="bob-error-text"></span>
+      </p>
+
+      <div>
+        <label class="text-label-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-xs" data-i18n="ecdh.sharedSecret.label">Derived shared secret</label>
+        <div class="relative">
+          <input type="text" id="bob-shared-secret" readonly placeholder="—"
+                 class="w-full bg-surface-container border border-outline-variant rounded-lg pl-md pr-10 py-sm font-label-md text-label-sm text-on-surface placeholder-on-surface-variant/40 truncate">
+          <button type="button" id="bob-shared-secret-copy" class="absolute inset-y-0 right-0 flex items-center px-sm text-on-surface-variant/60 hover:text-on-surface-variant" aria-label="Copy shared secret">
+            <span class="material-symbols-outlined text-[18px]">content_copy</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Match Banner -->
+  <div id="ecdh-match-banner" class="hidden mb-xl flex items-center gap-md p-md rounded-xl border">
+    <span id="ecdh-match-icon" class="material-symbols-outlined">check_circle</span>
+    <span id="ecdh-match-text" class="text-body-sm font-bold"></span>
+  </div>
+
+  <!-- Explanation
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+    <h2 class="font-headline-sm text-on-surface mb-md" data-i18n="ecdh.explain.title">How this works</h2>
+    <ol class="list-decimal list-inside space-y-sm text-body-sm text-on-surface-variant">
+      <li data-i18n="ecdh.explain.step1">Alice and Bob each generate their own elliptic-curve keypair — a private key they never share, and a public key they do.</li>
+      <li data-i18n="ecdh.explain.step2">They exchange public keys over a channel that could be watched by an eavesdropper — this is safe, because a public key alone can't be used to derive the private key or the shared secret.</li>
+      <li data-i18n="ecdh.explain.step3">Each side combines their own private key with the other's public key. Thanks to the algebra of elliptic curves, both computations land on the exact same point — the shared secret — without either private key ever crossing the wire.</li>
+      <li data-i18n="ecdh.explain.step4">That shared secret is typically fed into a key-derivation function to produce a symmetric encryption key. This page stops at the raw derived bytes for clarity.</li>
+    </ol>
+    <p class="text-label-sm text-on-surface-variant mt-md" data-i18n="ecdh.explain.disclaimer">
+      All key generation and derivation happens locally via the browser's native Web Crypto API — nothing here is sent over the network. Keys are shown on screen purely for demonstration; a real application never displays private keys.
+    </p>
+    <p class="text-label-sm text-on-surface-variant mt-sm" data-i18n="ecdh.poweredBy">Powered by the Web Crypto API (SubtleCrypto)</p>
+  </div>
+   -->
+</div>

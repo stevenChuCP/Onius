@@ -58,26 +58,32 @@
         </div>
       </div>
     </a>
-    <div class="col-span-12 md:col-span-4 max-w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-lg opacity-50 cursor-default">
+    <div class="col-span-12 md:col-span-4 max-w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-lg hover:border-primary transition-colors group">
       <div class="flex justify-between items-start mb-lg">
         <div>
           <span class="font-label-sm text-secondary block mb-xs uppercase tracking-widest" data-i18n="home.card.security.eyebrow">SECURITY</span>
           <h3 class="font-headline-sm text-on-surface" data-i18n="home.card.security.title">Crypto Keys</h3>
         </div>
-        <div class="p-sm bg-error-container/20 rounded-full text-error">
+        <div class="p-sm bg-error-container/20 rounded-full text-error group-hover:scale-110 transition-transform">
           <span class="material-symbols-outlined">verified_user</span>
         </div>
       </div>
       <ul class="space-y-sm">
-        <li class="flex items-center justify-between text-on-surface-variant py-xs border-b border-outline-variant/30">
+        <li>
+          <a class="flex items-center justify-between py-xs border-b border-outline-variant/30 text-on-surface hover:text-primary transition-colors" href="/ecdh.html">
+            <span class="font-label-md" data-tool="ecdh">ECDH Key Exchange</span>
+            <span class="material-symbols-outlined text-[18px] text-primary">arrow_forward</span>
+          </a>
+        </li>
+        <li class="flex items-center justify-between text-on-surface-variant py-xs border-b border-outline-variant/30 opacity-50">
           <span class="font-label-md" data-tool="sha256">SHA-256 Generator</span>
           <span class="text-label-xs text-primary font-bold tracking-widest" data-i18n="common.soon">SOON</span>
         </li>
-        <li class="flex items-center justify-between text-on-surface-variant py-xs border-b border-outline-variant/30">
+        <li class="flex items-center justify-between text-on-surface-variant py-xs border-b border-outline-variant/30 opacity-50">
           <span class="font-label-md" data-tool="rsa">RSA Generator</span>
           <span class="text-label-xs text-primary font-bold tracking-widest" data-i18n="common.soon">SOON</span>
         </li>
-        <li class="flex items-center justify-between text-on-surface-variant py-xs">
+        <li class="flex items-center justify-between text-on-surface-variant py-xs opacity-50">
           <span class="font-label-md" data-tool="pqc">PQC Algorithm</span>
           <span class="text-label-xs text-primary font-bold tracking-widest" data-i18n="common.soon">SOON</span>
         </li>

@@ -141,12 +141,26 @@
                 </label>
               </div>
               <div id="compress-password-fields" class="hidden flex flex-col sm:flex-row gap-md">
-                <input type="password" id="compress-password"
-                       class="flex-1 bg-surface-container border border-outline-variant rounded-lg px-md py-sm text-body-sm text-on-surface placeholder-on-surface-variant/40 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                       placeholder="Enter password" data-i18n-placeholder="archiver.password.enter" disabled>
-                <input type="password" id="compress-password-confirm"
-                       class="flex-1 bg-surface-container border border-outline-variant rounded-lg px-md py-sm text-body-sm text-on-surface placeholder-on-surface-variant/40 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                       placeholder="Confirm password" data-i18n-placeholder="archiver.password.confirm" disabled>
+                <div class="relative flex-1">
+                  <input type="password" id="compress-password" autocomplete="one-time-code" data-lpignore="true" data-1p-ignore data-bwignore="true" data-form-type="other"
+                         class="w-full bg-surface-container border border-outline-variant rounded-lg pl-md pr-10 py-sm text-body-sm text-on-surface placeholder-on-surface-variant/40 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                         placeholder="Enter password" data-i18n-placeholder="archiver.password.enter" disabled>
+                  <button type="button" id="compress-password-reveal" tabindex="-1"
+                          class="absolute inset-y-0 right-0 flex items-center px-sm text-on-surface-variant/60 hover:text-on-surface-variant disabled:opacity-40"
+                          aria-label="Show password" disabled>
+                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                  </button>
+                </div>
+                <div class="relative flex-1">
+                  <input type="password" id="compress-password-confirm" autocomplete="one-time-code" data-lpignore="true" data-1p-ignore data-bwignore="true" data-form-type="other"
+                         class="w-full bg-surface-container border border-outline-variant rounded-lg pl-md pr-10 py-sm text-body-sm text-on-surface placeholder-on-surface-variant/40 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                         placeholder="Confirm password" data-i18n-placeholder="archiver.password.confirm" disabled>
+                  <button type="button" id="compress-password-confirm-reveal" tabindex="-1"
+                          class="absolute inset-y-0 right-0 flex items-center px-sm text-on-surface-variant/60 hover:text-on-surface-variant disabled:opacity-40"
+                          aria-label="Show password" disabled>
+                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -316,9 +330,16 @@
           <p class="text-label-sm text-on-surface-variant" data-i18n="archiver.passwordModal.hint">Leave blank to try without a password</p>
         </div>
       </div>
-      <input type="password" id="modal-password"
-             class="w-full bg-surface-container border border-outline-variant rounded-xl px-md py-sm text-body-sm text-on-surface placeholder-on-surface-variant/40 focus:ring-2 focus:ring-primary focus:border-transparent transition-all mb-sm"
-             placeholder="Enter archive password" data-i18n-placeholder="archiver.passwordModal.placeholder">
+      <div class="relative mb-sm">
+        <input type="password" id="modal-password" autocomplete="one-time-code" data-lpignore="true" data-1p-ignore data-bwignore="true" data-form-type="other"
+               class="w-full bg-surface-container border border-outline-variant rounded-xl pl-md pr-10 py-sm text-body-sm text-on-surface placeholder-on-surface-variant/40 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+               placeholder="Enter archive password" data-i18n-placeholder="archiver.passwordModal.placeholder">
+        <button type="button" id="modal-password-reveal" tabindex="-1"
+                class="absolute inset-y-0 right-0 flex items-center px-sm text-on-surface-variant/60 hover:text-on-surface-variant"
+                aria-label="Show password">
+          <span class="material-symbols-outlined text-[18px]">visibility</span>
+        </button>
+      </div>
       <p id="modal-password-error" class="hidden text-label-sm mb-md flex items-center gap-xs" style="color:var(--clr-error)">
         <span class="material-symbols-outlined text-[14px]">error</span>
         <span data-i18n="archiver.passwordModal.wrongPassword">Incorrect password — try again</span>
