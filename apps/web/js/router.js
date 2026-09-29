@@ -7,12 +7,14 @@ import { initInstallPrompt } from './pwa.js';
 import * as homePage from './pages/home.js';
 import * as base64Page from './pages/base64.js';
 import * as archiverPage from './pages/archiver.js';
+import * as ecdhPage from './pages/ecdh.js';
 
 const routes = {
   '/': homePage,
   '/index.html': homePage,
   '/base64.html': base64Page,
-  '/archiver.html': archiverPage
+  '/archiver.html': archiverPage,
+  '/ecdh.html': ecdhPage
 };
 
 export function normalizePath(path) {

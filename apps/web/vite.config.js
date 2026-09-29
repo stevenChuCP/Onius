@@ -27,6 +27,7 @@ export default defineConfig({
                 main: resolve(__dirname, 'index.html'),
                 base64: resolve(__dirname, 'base64.html'),
                 archiver: resolve(__dirname, 'archiver.html'),
+                ecdh: resolve(__dirname, 'ecdh.html'),
                 // sw.js must be a real build entry (not a public/ passthrough
                 // file) so its __APP_VERSION__ reference gets substituted by
                 // the `define` above at build time.

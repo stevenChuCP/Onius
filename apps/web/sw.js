@@ -16,6 +16,7 @@ const STATIC_ASSETS = [
     '/index.html',
     '/base64.html',
     '/archiver.html',
+    '/ecdh.html',
     '/css/style.css',
     '/js/config.js',
     '/components/shell.html',
@@ -28,6 +29,7 @@ const STATIC_ASSETS = [
     '/components/home-content.html',
     '/components/base64-content.html',
     '/components/archiver-content.html',
+    '/components/ecdh-content.html',
     '/manifest.webmanifest',
     '/favicon.ico',
     '/android-chrome-192x192.png'
